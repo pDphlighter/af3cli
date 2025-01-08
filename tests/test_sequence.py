@@ -2,7 +2,8 @@ import pytest
 
 from af3cli.sequence import SequenceType, Sequence
 from af3cli.sequence import TemplateType, Template
-from af3cli.sequence import ResidueModification, NucleotideModification
+from af3cli.sequence import (Modification, ResidueModification,
+                             NucleotideModification)
 from af3cli.sequence import MSA
 
 
@@ -11,7 +12,7 @@ from af3cli.sequence import MSA
     (SequenceType.RNA, "rna"),
     (SequenceType.DNA, "dna")
 ])
-def test_residue_type(seq_type, seq_type_value):
+def test_residue_type(seq_type: SequenceType, seq_type_value: str) -> None:
     assert SequenceType(seq_type).value == seq_type_value
 
 
@@ -19,7 +20,10 @@ def test_residue_type(seq_type, seq_type_value):
     (TemplateType.STRING, "mmcif"),
     (TemplateType.FILE, "mmcifPath")
 ])
-def test_template_type(template_type, template_type_value):
+def test_template_type(
+        template_type: TemplateType,
+        template_type_value: str
+) -> None:
     assert TemplateType(template_type).value == template_type_value
 
 
@@ -27,7 +31,12 @@ def test_template_type(template_type, template_type_value):
     (TemplateType.STRING, "data_ ...", [1, 2, 3, 4], [4, 6, 7, 8]),
     (TemplateType.FILE, "/path_to_file", [1, 2, 3, 4], [4, 6, 7, 8]),
 ])
-def test_template_init(template_type, mmcif, qidx, tidx):
+def test_template_init(
+        template_type: TemplateType,
+        mmcif: str,
+        qidx: list[int],
+        tidx: list[int]
+) -> None:
     template = Template(template_type, mmcif, qidx, tidx)
     assert template.template_type == template_type
     assert template.mmcif == mmcif
@@ -39,7 +48,12 @@ def test_template_init(template_type, mmcif, qidx, tidx):
     (TemplateType.STRING, "data_ ...", [1, 2, 3, 4], [4, 6, 7, 8]),
     (TemplateType.FILE, "/path_to_file", [1, 2, 3, 4], [4, 6, 7, 8]),
 ])
-def test_template_to_dict(template_type, mmcif, qidx, tidx):
+def test_template_to_dict(
+        template_type: TemplateType,
+        mmcif: str,
+        qidx: list[int],
+        tidx: list[int]
+) -> None:
     template = Template(template_type, mmcif, qidx, tidx)
     tdict = template.to_dict()
     assert isinstance(tdict, dict)
@@ -54,7 +68,7 @@ def test_template_to_dict(template_type, mmcif, qidx, tidx):
 @pytest.mark.parametrize("mtype,mpos", [
     ("HY3", 1), ("P1L", 5)
 ])
-def test_residue_mod(mtype, mpos):
+def test_residue_mod(mtype: str, mpos: int) -> None:
     modification = ResidueModification(mtype, mpos)
     assert modification.mod_str == mtype
     assert modification.mod_pos == mpos
@@ -63,7 +77,7 @@ def test_residue_mod(mtype, mpos):
 @pytest.mark.parametrize("mtype,mpos", [
     ("HY3", 1), ("P1L", 5)
 ])
-def test_residue_mod_dict(mtype, mpos):
+def test_residue_mod_dict(mtype: str, mpos: int) -> None:
     modification = ResidueModification(mtype, mpos)
     mdict = modification.to_dict()
     assert isinstance(mdict, dict)
@@ -76,7 +90,7 @@ def test_residue_mod_dict(mtype, mpos):
 @pytest.mark.parametrize("mtype,mpos", [
     ("6OG", 1), ("6MA", 2), ("2MG", 5), ("5MC", 10)
 ])
-def test_nucleotide_mod(mtype, mpos):
+def test_nucleotide_mod(mtype: str, mpos: int) -> None:
     modification = NucleotideModification(mtype, mpos)
     assert modification.mod_str == mtype
     assert modification.mod_pos == mpos
@@ -85,7 +99,7 @@ def test_nucleotide_mod(mtype, mpos):
 @pytest.mark.parametrize("mtype,mpos", [
     ("6OG", 1), ("6MA", 2), ("2MG", 5), ("5MC", 10)
 ])
-def test_nucleotide_mod_dict(mtype, mpos):
+def test_nucleotide_mod_dict(mtype: str, mpos: int) -> None:
     modification = NucleotideModification(mtype, mpos)
     mdict = modification.to_dict()
     assert isinstance(mdict, dict)
@@ -104,7 +118,11 @@ def test_nucleotide_mod_dict(mtype, mpos):
      [NucleotideModification("6OG", 1),
       NucleotideModification("6MA", 2)])
 ])
-def test_sequence_init_mod(seq_type, seq_str, seq_id, seq_mods):
+def test_sequence_init_mod(
+        seq_type: SequenceType,
+        seq_str: str, seq_id: list[str] | str | None,
+        seq_mods: list[Modification]
+) -> None:
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, seq_mod=seq_mods)
     assert seq.seq_type == seq_type
     assert seq.seq_str == seq_str
@@ -125,7 +143,12 @@ def test_sequence_init_mod(seq_type, seq_str, seq_id, seq_mods):
      [Template(TemplateType.STRING, "data", [1, 2], [4, 6])]
     ),
 ])
-def test_sequence_init_template(seq_type, seq_str, seq_id, templates):
+def test_sequence_init_template(
+        seq_type: SequenceType,
+        seq_str: str,
+        seq_id: list[str] | str | None,
+        templates: list[Template] | None
+) -> None:
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, templates=templates)
     assert seq.seq_type == seq_type
     assert seq.seq_str == seq_str
@@ -141,7 +164,12 @@ def test_sequence_init_template(seq_type, seq_str, seq_id, templates):
     ("test", "test", False, True),
     ("test", "test", True, True),
 ])
-def test_msa_init(paired, unpaired, pispath, unpispath):
+def test_msa_init(
+        paired: str | None,
+        unpaired: str | None,
+        pispath: bool,
+        unpispath: bool
+) -> None:
     msa = MSA(paired, unpaired, pispath, unpispath)
     assert msa.paired == paired
     assert msa.unpaired == unpaired
@@ -157,7 +185,12 @@ def test_msa_init(paired, unpaired, pispath, unpispath):
     ("test", "test", False, True),
     ("test", "test", True, True),
 ])
-def test_msa_to_dict(paired, unpaired, pispath, unpispath):
+def test_msa_to_dict(
+        paired: str | None,
+        unpaired: str | None,
+        pispath: bool,
+        unpispath: bool
+) -> None:
     msa = MSA(paired, unpaired, pispath, unpispath)
     tmp_dict = msa.to_dict()
     if paired is not None:
@@ -198,7 +231,12 @@ def test_msa_to_dict(paired, unpaired, pispath, unpispath):
      MSA(paired="test", unpaired="test", paired_is_path=True, unpaired_is_path=True)
     ),
 ])
-def test_sequence_init_msa(seq_type, seq_str, seq_id, msa):
+def test_sequence_init_msa(
+        seq_type: SequenceType,
+        seq_str: str,
+        seq_id: list[str] | str | None,
+        msa: MSA | None
+) -> None:
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, msa=msa)
     assert seq.seq_type == seq_type
     assert seq.seq_str == seq_str

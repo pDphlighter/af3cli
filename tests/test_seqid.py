@@ -8,26 +8,26 @@ from af3cli.seqid import num_to_letters, IDRegister
     (27, "AA"), (28, "AB"), (52, "AZ"), (53, "BA"),
     (703, "AAA"), (704, "AAB")
 ])
-def test_num_to_letters(num, letters):
+def test_num_to_letters(num: int, letters: str) -> None:
     assert num_to_letters(num) == letters
 
 
 @pytest.fixture(scope="module")
-def register():
+def register() -> IDRegister:
     return IDRegister()
 
 
 @pytest.mark.parametrize("letter", [
     "A", "B", "C", "D"
 ])
-def test_id_register(register, letter):
+def test_id_register(register: IDRegister, letter: str) -> None:
     assert register.generate() == letter
 
 
 @pytest.mark.parametrize("letter", [
     "F", "G", "H", "I"
 ])
-def test_id_register_fill(register, letter):
+def test_id_register_fill(register: IDRegister, letter: str) -> None:
     register.register(letter)
     assert letter in register._registered_ids
     assert register._count == 4
@@ -36,13 +36,16 @@ def test_id_register_fill(register, letter):
 @pytest.mark.parametrize("letter", [
     "E", "J", "K", "L", "M"
 ])
-def test_id_register_filled(register, letter):
+def test_id_register_filled(register: IDRegister, letter: str) -> None:
     assert register.generate() == letter
 
 
 @pytest.mark.parametrize("letter", [
     "N", "NN", "NNN", "NNNN"
 ])
-def test_id_register_multiple_letters(register, letter):
+def test_id_register_multiple_letters(
+        register: IDRegister,
+        letter: str
+) -> None:
     register.register(letter)
     assert letter in register._registered_ids
