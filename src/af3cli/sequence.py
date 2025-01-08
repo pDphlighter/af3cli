@@ -87,3 +87,67 @@ class Template(DictMixin):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}({self.template_type.name})>"
+
+
+class MSA(DictMixin):
+    """
+    Manages paired and unpaired Multiple Sequence Alignment (MSA) data.
+    These are only available for protein and RNA sequences and not for
+    DNA sequences. A check will be performed in the `Sequence` class.
+
+    Attributes
+    ----------
+    paired : str or None
+        Paired MSA data or its file path.
+    unpaired : str or None
+        Unpaired MSA data or its file path.
+    paired_is_path : bool
+        Indicates whether `paired` represents a file path.
+    unpaired_is_path : bool
+        Indicates whether `unpaired` represents a file path.
+    """
+    def __init__(
+        self,
+        paired: str | None = None,
+        unpaired: str | None = None,
+        paired_is_path: bool = False,
+        unpaired_is_path: bool = False,
+    ):
+        self.paired: str | None = paired
+        self.unpaired: str | None = unpaired
+        self.paired_is_path: bool = paired_is_path
+        self.unpaired_is_path: bool = unpaired_is_path
+
+    def to_dict(self) -> dict:
+        """
+        Converts the attributes of the object into a dictionary representation
+        to automatically generate the corresponding fields in the AlphaFold3 input.
+
+        Returns
+        -------
+        dict
+            A dictionary containing key-value pairs derived from the object's
+            attributes. The keys can include 'pairedMsaPath', 'pairedMsa',
+            'unpairedMsaPath', or 'unpairedMsa', depending on the values and
+            conditions of the attributes.
+        """
+        tmp_dict = {}
+        if self.paired is not None:
+            if self.paired_is_path:
+                tmp_dict["pairedMsaPath"] = self.paired
+            else:
+                tmp_dict["pairedMsa"] = self.unpaired
+        if self.unpaired is not None:
+            if self.unpaired_is_path:
+                tmp_dict["unpairedMsaPath"] = self.unpaired
+            else:
+                tmp_dict["unpairedMsa"] = self.unpaired
+        return tmp_dict
+
+    def __str__(self) -> str:
+        display_paired = "paired" if self.paired is not None else ""
+        display_unpaired = "unpaired" if self.unpaired is not None else ""
+        return f"MSA({display_paired}, {display_unpaired})"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
