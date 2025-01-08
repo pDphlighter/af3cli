@@ -299,4 +299,38 @@ class Sequence(IDRecord, DictMixin):
                                   f"not match sequence number ({num})."))
 
     def to_dict(self) -> dict:
-        pass
+        """
+         Convert the object to a dictionary representation.
+
+         This method creates and returns a dictionary representation of the object,
+         including its identifier, sequence string, modifications, templates, and,
+         the multiple sequence alignment (MSA). It is used to generate the sequence
+         entries in the AlphaFold3 input file.
+
+         Returns
+         -------
+         dict
+             A dictionary representation of the object.
+         """
+        content = dict()
+        content["id"] = self.get_id()
+        content["sequence"] = self.seq_str
+        if len(self.seq_mod):
+            content["modifications"] = [m.to_dict() for m in self.seq_mod]
+        if len(self.templates):
+            content["templates"] = [t.to_dict() for t in self.templates]
+        if self.msa is not None:
+            content |= self.msa.to_dict()
+        return {self.seq_type.value: content}
+
+    def __str__(self) -> str:
+        display_template = "T" if len(self.templates) else ""
+        display_mod = "M" if len(self.seq_mod) else ""
+        display_msa = "MSA" if self.msa is not None else ""
+        display_flags = ",".join(
+            v for v in [display_template, display_mod, display_msa] if v
+        )
+        return f"{self.seq_type.name}({len(self.seq_str)})[{display_flags}]"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}({self.seq_type.name})>"
