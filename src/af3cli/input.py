@@ -1,4 +1,7 @@
-class InputFile(object):
+from .mixin import DictMixin
+
+
+class InputFile(DictMixin):
     """
     Represents an input file configuration for an AlphaFold3 job, including
     metadata, sequences and ligands. This class facilitates the preparation
@@ -34,3 +37,6 @@ class InputFile(object):
         if seeds is None:
             seeds = [1]
         self.seeds: list[int] = seeds
+
+    def to_dict(self) -> dict:
+        pass
