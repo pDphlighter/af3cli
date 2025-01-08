@@ -2,6 +2,8 @@ from enum import StrEnum
 from abc import ABCMeta
 
 from .mixin import DictMixin
+from .exception import AFTemplateError
+from .seqid import IDRecord
 
 
 class SequenceType(StrEnum):
@@ -226,3 +228,75 @@ class NucleotideModification(Modification):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"
+
+
+class Sequence(IDRecord, DictMixin):
+    """
+    Represents a sequence with templates and modifications.
+
+    The Sequence class is used to store any sequence data with associated
+    modifications, templates, and multiple sequence alignment (MSA).
+    It provides functionality for validation of sequence attributes,
+    This class extends `_IDRecord` to automatically handle sequence IDs.
+
+    Attributes
+    ----------
+    seq_type : SequenceType
+        The type of the sequence (e.g., Protein, DNA, RNA).
+    seq_str : str
+        The string representation of the sequence.
+    msa : MSA or None
+        The multiple sequence alignment (MSA) information, if available.
+    seq_mod : list of Modification
+        Modifications associated with the sequence.
+    templates : list of Template
+        Templates associated with the sequence. Supported only for protein sequences.
+    num : int
+        The number of sequences associated with the sequence ID.
+    _seq_id : list[str] or None
+        The sequence ID(s) associated with the sequence. These can be
+        either specified as a list of strings or will be automatically
+        assigned by `IDRegister`.
+    """
+    def __init__(
+        self,
+        seq_type: SequenceType,
+        seq_str: str,
+        num: int | None = None,
+        seq_id: list[str] | None = None,
+        seq_mod: list[Modification] | None = None,
+        templates: list[Template] | None = None,
+        msa: MSA | None = None,
+    ):
+        super().__init__(None)
+        self.seq_str: str = seq_str
+        self.seq_type: SequenceType = seq_type
+        self.msa: MSA | None = msa
+
+        if seq_mod is None:
+            seq_mod = []
+        self.seq_mod: list[Modification] = seq_mod
+
+        if seq_type != SequenceType.PROTEIN and templates is not None:
+            raise AFTemplateError("Templates are only supported for proteins.")
+
+        if templates is None:
+            templates = []
+        self.templates: list[Template] = templates
+
+        # can be overwritten if seq_id is specified
+        if num is None:
+            self.num: int = 1
+        else:
+            self.num: int = num
+
+        if seq_id is not None:
+            self._seq_id: list[str] = seq_id
+            if num is None:
+                self.num: int = len(seq_id)
+            elif len(seq_id) != num:
+                raise ValueError((f"Sequence ID length ({len(seq_id)}) does "
+                                  f"not match sequence number ({num})."))
+
+    def to_dict(self) -> dict:
+        pass
