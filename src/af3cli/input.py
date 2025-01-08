@@ -96,4 +96,37 @@ class InputFile(DictMixin):
         self._assign_ids()
 
     def to_dict(self) -> dict:
-        pass
+        """
+        Converts the object and its associated attributes to a dictionary representation.
+        The created dictionary contains all necessary information for the AlphaFold3 input
+        file. An ID will be assigned to all sequences and ligands if they do not already
+        have one. This might result in an error if new sequences with duplicate IDs are
+        added to the input file.
+
+        Returns
+        -------
+        dict
+            A dictionary containing all relevant attributes for running AlphaFold3 jobs.
+        """
+        self._prepare()
+
+        content = dict()
+        content["name"] = self.name
+        content["version"] = self.version
+        content["dialect"] = self.dialect
+        content["modelSeeds"] = self.seeds
+        content["sequences"] = []
+
+        for seqtype in [self.sequences, self.ligands]:
+            for entry in seqtype:
+                content["sequences"].append(entry.to_dict())
+
+        if len(self.bonded_atoms):
+            content["bondedAtomPairs"] = []
+            for entry in self.bonded_atoms:
+                content["bondedAtomPairs"].append(entry.as_list())
+
+        if self.user_ccd is not None:
+            content["userCCD"] = self.user_ccd
+
+        return content
