@@ -3,6 +3,8 @@ from typing import Self
 from .input import InputFile
 from .seqid import IDRegister
 from .ligand import Ligand
+from .bond import Bond
+from .sequence import Sequence
 
 
 class InputBuilder(object):
@@ -120,4 +122,55 @@ class InputBuilder(object):
             Returns the current instance of the object to allow method chaining.
         """
         self._afinput.ligands.append(ligand)
+        return self
+
+    def add_sequence(self, sequence: Sequence) -> Self:
+        """
+        Adds a sequence to the list of sequences in the `InputFile` instance.
+
+        Parameters
+        ----------
+        sequence : Sequence
+            The sequence to be added to the list of sequences.
+
+        Returns
+        -------
+        Self
+            Returns the current instance of the object to allow method chaining.
+        """
+        self._afinput.sequences.append(sequence)
+        return self
+
+    def add_bonded_atom_pair(self, bond: Bond) -> Self:
+        """
+        Add a bonded atom pair to the corresponding list in the `InputFile` instance.
+
+        Parameters
+        ----------
+        bond : Bond
+            An instance of the `Bond` class representing the bonded atom pair.
+
+        Returns
+        -------
+        Self
+            Returns the current instance of the object to allow method chaining.
+        """
+        self._afinput.bonded_atoms.append(bond)
+        return self
+
+    def add_user_ccd(self, user_ccd: str) -> Self:
+        """
+        Sets the userccd attribute as string in the `InputFile` instance.
+
+        Parameters
+        ----------
+        user_ccd : str
+            The CCD file content to be assigned to the userccd entry.
+
+        Returns
+        -------
+        Self
+            Returns the current instance of the object to allow method chaining.
+        """
+        self._afinput.user_ccd = user_ccd
         return self
