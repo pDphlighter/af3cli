@@ -79,3 +79,9 @@ class Ligand(IDRecord, DictMixin):
         content["id"] = self.get_id()
         content[self.ligand_type.value] = self.ligand_str
         return {"ligand": content}
+
+    def __str__(self) -> str:
+        return f"Ligand({self.ligand_type.name})"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
