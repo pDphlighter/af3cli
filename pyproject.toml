@@ -1,0 +1,27 @@
+[project]
+name = "af3cli"
+version = "0.1.0"
+description = """
+A command-line interface and Python library for generating AlphaFold3 input files.
+"""
+readme = "README.md"
+authors = [
+    { name = "Lukas Schulig", email = "schuligl@uni-greifswald.de" },
+    { name = "Philipp Döpner", email = "doepnerp@uni-greifswald.de" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "fire>=0.7.0",
+]
+
+[project.scripts]
+af3cli = "af3cli.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+]
