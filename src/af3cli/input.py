@@ -1,4 +1,5 @@
 from .mixin import DictMixin
+from .ligand import Ligand
 
 
 class InputFile(DictMixin):
@@ -37,6 +38,8 @@ class InputFile(DictMixin):
         if seeds is None:
             seeds = [1]
         self.seeds: list[int] = seeds
+
+        self.ligands: list[Ligand] = []
 
     def to_dict(self) -> dict:
         pass
