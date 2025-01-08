@@ -1,4 +1,5 @@
 from enum import StrEnum
+from abc import ABCMeta
 
 from .mixin import DictMixin
 
@@ -148,6 +149,80 @@ class MSA(DictMixin):
         display_paired = "paired" if self.paired is not None else ""
         display_unpaired = "unpaired" if self.unpaired is not None else ""
         return f"MSA({display_paired}, {display_unpaired})"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
+
+class Modification(DictMixin, metaclass=ABCMeta):
+    """
+    Represents a modification with specific CCD code and position.
+
+    Attributes
+    ----------
+    mod_str : str
+        The CCD code representing the type or name of the modification.
+    mod_pos : int
+        The position of the modification within its given context.
+    """
+    def __init__(self, mod_str: str, mod_pos: int):
+        self.mod_str: str = mod_str
+        self.mod_pos: int = mod_pos
+
+
+class ResidueModification(Modification):
+    """
+    Represents a specific modification at a specific residue position of
+    protein sequences.
+
+    Attributes
+    ----------
+    mod_str : str
+        The CCD code representing the type of the modification
+        (e.g., phosphorylation, methylation).
+    mod_pos : int
+        An integer representing the position of the modification
+        within the sequence.
+    """
+    def __init__(self, mod_str: str, mod_pos: int):
+        super().__init__(mod_str, mod_pos)
+
+    def to_dict(self):
+        return {
+            "ptmType": self.mod_str,
+            "ptmPosition": self.mod_pos
+        }
+
+    def __str__(self) -> str:
+        return f"ResidueModification({self.mod_str}, {self.mod_pos})"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
+
+class NucleotideModification(Modification):
+    """
+    Represents a specific modification at a specific residue position of
+    nucleotide sequences.
+
+    Attributes
+    ----------
+    mod_str : str
+        Type of the nucleotide modification.
+    mod_pos : int
+        Position of the modification in the nucleotide sequence.
+    """
+    def __init__(self, mod_str: str, mod_pos: int):
+        super().__init__(mod_str, mod_pos)
+
+    def to_dict(self):
+        return {
+            "modificationType": self.mod_str,
+            "basePosition": self.mod_pos
+        }
+
+    def __str__(self) -> str:
+        return f"NucleotideModification({self.mod_str}, {self.mod_pos})"
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"
