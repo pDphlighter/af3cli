@@ -24,9 +24,29 @@ class InputBuilder(object):
     _id_register : IDRegister
         The ID register object managing unique ID allocation.
     """
-    def __init__(self):
-        self._afinput: InputFile = InputFile()
+    def __init__(self, afinput: InputFile | None = None):
+        if afinput is None:
+            afinput = InputFile()
+        self._afinput: InputFile = afinput
         self._id_register: IDRegister = IDRegister()
+
+    def attach(self, afinput: InputFile) -> Self:
+        """
+        Attaches an `InputFile` object to the current instance.
+
+        Parameters
+        ----------
+        afinput : InputFile
+            The input file to be attached to the object.
+
+        Returns
+        -------
+        self : object
+            Returns the instance of the current object with the attached input
+            file, allowing method chaining.
+        """
+        self._afinput = afinput
+        return self
 
     def build(self) -> InputFile:
         """
