@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from copy import deepcopy
+
 from .mixin import DictMixin
 from .ligand import Ligand
 from .bond import Bond
@@ -75,7 +79,6 @@ class InputFile(DictMixin):
                         self._id_register.register(seq_id)
                         entry.is_registered = True
 
-
     def _assign_ids(self) -> None:
         """
         Assign unique IDs to sequences and ligands that do not already have an ID.
@@ -90,10 +93,79 @@ class InputFile(DictMixin):
                     seq_ids = [self._id_register.generate() for _ in range(entry.num)]
                     entry.set_id(seq_ids)
 
-
     def _prepare(self) -> None:
         self._register_ids()
         self._assign_ids()
+
+    def reset_ids(self) -> None:
+        """
+        Resets the IDs of all entries in the object's sequences and ligands.
+        """
+        for seqtype in [self.sequences, self.ligands]:
+            for entry in seqtype:
+                entry.remove_id()
+        self._id_register.reset()
+
+    def merge(
+            self,
+            other: InputFile,
+            reset: bool = True,
+            seeds: bool = False,
+            bonded_atoms: bool = False,
+            userccd: bool = False
+    ) -> None:
+        """
+        Merges the content of another InputFile instance into the current
+        instance.
+
+        Notes
+        -----
+        No checks are performed to ensure that the IDs are handled correctly.
+        Please use with caution when no reset is performed or when keeping
+        bonded atoms.
+
+        Parameters
+        ----------
+        other : InputFile
+            An InputFile instance whose content will be merged into
+            the current instance.
+        reset : bool
+            If True (default), resets the IDs of the content being merged
+            to ensure unique identifiers.
+        seeds : bool
+            If True (default: False), merges the seeds from the `other`
+            InputFile instance into the current instance.
+        bonded_atoms : bool
+            If True (default: False), appends bonded atom information from
+            the `other` InputFile instance to the current instance.
+        userccd : bool
+            If True (default: False), overwrites the `user_ccd` attribute
+            of the current instance with the value from the `other` InputFile
+            instance.
+
+        Returns
+        -------
+        None
+            This method modifies the current instance in place; it does
+            not return any value.
+        """
+        tmp_input = deepcopy(other)
+
+        if reset:
+            tmp_input.reset_ids()
+        if seeds:
+            self.seeds.extend(tmp_input.seeds)
+        if bonded_atoms:
+            for bond in tmp_input.bonded_atoms:
+                self.bonded_atoms.append(bond)
+        if userccd:
+            self.user_ccd = tmp_input.user_ccd
+
+        for seq in tmp_input.sequences:
+            self.sequences.append(seq)
+
+        for lig in tmp_input.ligands:
+            self.ligands.append(lig)
 
     def to_dict(self) -> dict:
         """

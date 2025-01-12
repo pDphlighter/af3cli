@@ -16,7 +16,7 @@ from .sequence import Sequence, SequenceType
 from .sequence import Template, TemplateType, MSA
 from .sequence import (Modification, NucleotideModification,
                        ResidueModification)
-from .io import JSONWriter
+from .io import JSONWriter, JSONReader
 
 # CONSTANTS
 MAX_RANDOM_SEED: int = 99999
@@ -889,6 +889,57 @@ class CLI(CommandBase):
         self._builder.set_name(jobname)
         self._builder.set_version(version)
         self._builder.set_dialect(dialect)
+        return self
+
+    def merge(
+            self,
+            filename: str,
+            noreset: bool = False,
+            userccd: bool = False,
+            bonds: bool = False,
+            seeds: bool = False
+    ) -> CLI:
+        """
+        Merges the current input object with a specified input file.
+
+        Parameters
+        ----------
+        filename : str
+            The path to the input JSON file to be merged with the current input.
+        noreset : bool, optional
+            If True, skips resetting IDs while merging inputs
+            (CAUTION: this might result in clashes with existing IDs).
+            Defaults to False.
+        userccd : bool, optional
+            If True, overrides user-defined CCD while merging.
+            Defaults to False.
+        bonds : bool, optional
+            If True, merges bonded atoms data.
+            Defaults to False.
+        seeds : bool, optional
+            If True, merges seeds without removing duplicates.
+            Defaults to False.
+
+        Returns
+        -------
+        CLI
+            Returns the same instance of the class to enable method chaining.
+        """
+        try:
+            other_input = JSONReader.read(filename)
+            if noreset:
+                logger.warning("Skipping reset might cause ID clashes.")
+
+            curr_input = self._builder.build()
+            curr_input.merge(
+                other_input,
+                reset=not noreset,
+                userccd=userccd,
+                bonded_atoms=bonds,
+                seeds=seeds
+            )
+        except Exception as e:
+            exit_on_error(f"Failed to process existing input file: {filename}\n{e}")
         return self
 
     def ccd(self, filename: str) -> Self:

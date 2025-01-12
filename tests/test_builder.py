@@ -17,7 +17,8 @@ def builder() -> InputBuilder:
 def sample_sequence() -> Sequence:
     return Sequence(
         seq_type=SequenceType.PROTEIN,
-        seq_str="MVKVGVNGFGRIGRLVTRAAFNS"
+        seq_str="MVKVGVNGFGRIGRLVTRAAFNS",
+        seq_id=["A", "B"]
     )
 
 
@@ -26,6 +27,7 @@ def sample_ligand() -> Ligand:
     return Ligand(
         ligand_type=LigandType.CCD,
         ligand_str="NAC",
+        seq_id=["C", "D"]
     )
 
 
@@ -99,3 +101,26 @@ def test_builder_build(builder: InputBuilder) -> None:
     assert len(afinput.sequences) > 0
     assert len(afinput.ligands) > 0
     assert len(afinput.bonded_atoms) > 0
+
+
+def test_builder_attach(builder: InputBuilder) -> None:
+    curr_input = builder.build()
+    builder.attach(curr_input)
+    assert builder._afinput == curr_input
+
+
+def test_builder_reset_ids(
+        builder: InputBuilder,
+        sample_sequence: Sequence
+) -> None:
+    curr_input = builder.build()
+
+    for seq_type in [curr_input.sequences, curr_input.ligands]:
+        for entry in seq_type:
+            assert entry.get_id() is not None
+
+    builder.reset_ids()
+
+    for seq_type in [curr_input.sequences, curr_input.ligands]:
+        for entry in seq_type:
+            assert entry.get_id() is None
