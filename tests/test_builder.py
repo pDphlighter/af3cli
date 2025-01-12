@@ -105,3 +105,14 @@ def test_builder_attach(builder: InputBuilder) -> None:
     curr_input = builder.build()
     builder.attach(curr_input)
     assert builder._afinput == curr_input
+
+
+def test_builder_reset_ids(
+        builder: InputBuilder,
+        sample_sequence: Sequence
+) -> None:
+    builder.reset_ids()
+    curr_input = builder.build()
+    for seq_type in [curr_input.sequences, curr_input.ligands]:
+        for entry in seq_type:
+            assert entry.get_id() is None

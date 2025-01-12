@@ -64,8 +64,12 @@ class IDRecord(object):
     def get_id(self) -> list[str]:
         return self._seq_id
 
-    def set_id(self, seq_id: list[str]):
+    def set_id(self, seq_id: list[str]) -> None:
         self._seq_id = seq_id
+
+    def remove_id(self) -> None:
+        self._seq_id = None
+        self.is_registered = False
 
 
 class IDRegister(object):
@@ -123,3 +127,15 @@ class IDRegister(object):
             if seq_id not in self._registered_ids:
                 return seq_id
             self._count += 1
+
+    def reset(self) -> None:
+        """
+        Resets the `IDRegister` object.
+
+        Notes
+        -----
+        The ids and register states of corresponding sequence objects are
+        not affected.
+        """
+        self._count = 0
+        self._registered_ids = set()

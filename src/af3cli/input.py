@@ -75,7 +75,6 @@ class InputFile(DictMixin):
                         self._id_register.register(seq_id)
                         entry.is_registered = True
 
-
     def _assign_ids(self) -> None:
         """
         Assign unique IDs to sequences and ligands that do not already have an ID.
@@ -90,10 +89,18 @@ class InputFile(DictMixin):
                     seq_ids = [self._id_register.generate() for _ in range(entry.num)]
                     entry.set_id(seq_ids)
 
-
     def _prepare(self) -> None:
         self._register_ids()
         self._assign_ids()
+
+    def reset_ids(self) -> None:
+        """
+        Resets the IDs of all entries in the object's sequences and ligands.
+        """
+        for seqtype in [self.sequences, self.ligands]:
+            for entry in seqtype:
+                entry.remove_id()
+        self._id_register.reset()
 
     def to_dict(self) -> dict:
         """

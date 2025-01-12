@@ -49,3 +49,9 @@ def test_id_register_multiple_letters(
 ) -> None:
     register.register(letter)
     assert letter in register._registered_ids
+
+
+def test_id_register_reset(register: IDRegister) -> None:
+    register.reset()
+    assert len(register._registered_ids) == 0
+    assert register._count == 0

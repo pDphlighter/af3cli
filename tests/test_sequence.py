@@ -221,7 +221,7 @@ def test_msa_to_dict(
     (SequenceType.PROTEIN, "MVKVGVNGF", ["A", "B"],
      MSA(paired="test", unpaired="test")
     ),
-    (SequenceType.RNA, "MVKVGVNGF", "C",
+    (SequenceType.RNA, "AUGUGUAU", "C",
      MSA(unpaired="test", unpaired_is_path=True)
     ),
     (SequenceType.PROTEIN, "MVKVGVNGF", ["A"],
@@ -253,3 +253,18 @@ def test_sequence_init_msa(
     if msa.unpaired_is_path:
         assert "unpairedMsaPath" in tmp_dict.keys()
         assert "unpairedMsa" not in tmp_dict.keys()
+
+@pytest.mark.parametrize("seq_type,seq_str,seq_id", [
+    (SequenceType.PROTEIN, "MVKVGVNGF", None),
+    (SequenceType.PROTEIN, "AAQAA", ["A", "B"]),
+    (SequenceType.RNA, "AUGUGUAU", "A"),
+    (SequenceType.DNA, "GACCTCT", ["C"])
+])
+def test_sequence_remove_id(
+        seq_type: SequenceType,
+        seq_str: str,
+        seq_id: list[str] | str | None,
+):
+    seq = Sequence(seq_type, seq_str, seq_id=seq_id)
+    seq.remove_id()
+    assert seq.get_id() is None

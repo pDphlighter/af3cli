@@ -48,6 +48,18 @@ class InputBuilder(object):
         self._afinput = afinput
         return self
 
+    def reset_ids(self) -> Self:
+        """
+        Resets all IDs of ligands and sequences within the current `Input` object.
+
+        Returns
+        -------
+        Self
+            Returns the instance itself to allow method chaining.
+        """
+        self._afinput.reset_ids()
+        return self
+
     def build(self) -> InputFile:
         """
         Builds and retrieves the constructed `InputFile` instance.
