@@ -281,15 +281,7 @@ class JSONReader(object):
         -------
         Optional[MSA]
             An MSA object if the input sequence content supports it, otherwise `None`.
-
-        Raises
-        ------
-        AFMSAError
-            If the sequence type is DNA and MSA is attempted to be parsed for it.
-            Also raised if paired MSA is provided for RNA sequences.
         """
-        if seq_type == SequenceType.DNA:
-            raise AFMSAError("MSA not supported for DNA sequences.")
         msa = None
 
         paired = seq_content.get("pairedMsa") or seq_content.get("pairedMsaPath")
@@ -337,7 +329,9 @@ class JSONReader(object):
         if "templates" in seq_content.keys():
             templates = JSONReader._parse_templates(seq_type, seq_content)
 
-        msa = JSONReader._parse_msa(seq_type, seq_content)
+        msa = None
+        if seq_type != SequenceType.DNA:
+            msa = JSONReader._parse_msa(seq_type, seq_content)
 
         return Sequence(
             seq_type=seq_type,
