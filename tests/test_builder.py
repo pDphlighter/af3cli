@@ -99,3 +99,9 @@ def test_builder_build(builder: InputBuilder) -> None:
     assert len(afinput.sequences) > 0
     assert len(afinput.ligands) > 0
     assert len(afinput.bonded_atoms) > 0
+
+
+def test_builder_attach(builder: InputBuilder) -> None:
+    curr_input = builder.build()
+    builder.attach(curr_input)
+    assert builder._afinput == curr_input
