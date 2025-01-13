@@ -1,0 +1,1 @@
+Examples of using af3cli: either as direct CLI inputs via bash scripts or as a Python library.
