@@ -17,6 +17,7 @@ from .sequence import Template, TemplateType, MSA
 from .sequence import (Modification, NucleotideModification,
                        ResidueModification)
 from .sequence import read_fasta, fasta2seq
+from .sequence import is_sequence_type
 from .io import JSONWriter, JSONReader
 
 # CONSTANTS
@@ -488,6 +489,10 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
             self._sequence_str = read_fasta_entry(sequence)
         else:
             self._sequence_str = sequence
+
+        if not is_sequence_type(self.sequence_type(), self._sequence_str):
+            exit_on_error(f"Invalid sequence for '{self.sequence_type().name}'")
+
         self._sequence_ids = ids
         self._sequence_num = num
         return self
