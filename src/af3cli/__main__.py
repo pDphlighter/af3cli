@@ -16,6 +16,7 @@ from .sequence import Sequence, SequenceType
 from .sequence import Template, TemplateType, MSA
 from .sequence import (Modification, NucleotideModification,
                        ResidueModification)
+from .sequence import read_fasta
 from .io import JSONWriter, JSONReader
 
 # CONSTANTS
@@ -108,7 +109,7 @@ def read_sdf_file(filename: str) -> list[str]:
     Raises
     ------
     SystemExit
-        If RDKit is not installed on the system.
+        If RDKit is not installed on the system or file is not found.
     """
     try:
         smiles = []
@@ -120,8 +121,48 @@ def read_sdf_file(filename: str) -> list[str]:
             smiles.append(smi)
         logger.info(f"Read {len(smiles)} molecules from SDF file.")
         return smiles
+    except FileNotFoundError as e:
+        exit_on_error(f"SDF file not found: {e}")
     except ImportError as e:
-        exit_on_error(f"Please install RDKit to read SDF files ({e})")
+        exit_on_error(e.msg)
+    except Exception as e:
+        exit_on_error(f"Failed to read SDF file: {e}")
+
+
+def read_fasta_entry(filename: str) -> str:
+    """
+    Reads a single entry from a FASTA file and returns its sequence string.
+
+    Parameters
+    ----------
+    filename : str
+        The path to the FASTA file to be read.
+
+    Returns
+    -------
+    str
+        The sequence string from the first valid entry in the FASTA file.
+
+    Raises
+    ------
+    SystemExit
+        If Biopython is not installed or if the specified FASTA file
+        does not exist / contains no valid sequences.
+    """
+    try:
+        fasta_file = read_fasta(filename)
+        seq_name, seq_str = next(fasta_file)
+        if seq_str is None:
+            exit_on_error("No valid sequence found in FASTA file.")
+        return seq_str
+    except FileNotFoundError as e:
+        exit_on_error(f"FASTA file not found: {e}")
+    except StopIteration as e:
+        exit_on_error(f"No sequence found in FASTA file. {e}")
+    except ImportError as e:
+        exit_on_error(e.msg)
+    except Exception as e:
+        exit_on_error(f"Failed to read FASTA file: {e}")
 
 
 def read_file_to_str(filename) -> str:
@@ -368,7 +409,8 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
         self,
         sequence: str,
         num: int | None = None,
-        ids: list[str] | None = None
+        ids: list[str] | None = None,
+        fasta: bool = False
     ) -> Self:
         """
         Adds a sequence and optionally specifies either a number or a list of IDs for the
@@ -377,7 +419,8 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
         Parameters
         ----------
         sequence : str
-            A string representing the specific sequence to be added.
+            A string representing the specific sequence to be added or a path
+            to a FASTA file containing the sequence if `fasta` is set to True.
 
         num : int
             An integer that defines a number of sequences. Either
@@ -386,6 +429,9 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
         ids : list of str
             A list of strings representing unique identifiers for the sequence.
             Either `ids` or `num` can be specified, but not both.
+
+        fasta: bool
+            If `True`, the sequence will be interpreted as a FASTA file.
 
         Returns
         -------
@@ -399,7 +445,10 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
 
         ids = ensure_opt_str_list(ids)
 
-        self._sequence_str = sequence
+        if fasta:
+            self._sequence_str = read_fasta_entry(sequence)
+        else:
+            self._sequence_str = sequence
         self._sequence_ids = ids
         self._sequence_num = num
         return self
