@@ -16,7 +16,7 @@ from .sequence import Sequence, SequenceType
 from .sequence import Template, TemplateType, MSA
 from .sequence import (Modification, NucleotideModification,
                        ResidueModification)
-from .sequence import read_fasta
+from .sequence import read_fasta, fasta2seq
 from .io import JSONWriter, JSONReader
 
 # CONSTANTS
@@ -159,6 +159,45 @@ def read_fasta_entry(filename: str) -> str:
         exit_on_error(f"FASTA file not found: {e}")
     except StopIteration as e:
         exit_on_error(f"No sequence found in FASTA file. {e}")
+    except ImportError as e:
+        exit_on_error(e.msg)
+    except Exception as e:
+        exit_on_error(f"Failed to read FASTA file: {e}")
+
+
+def read_fasta_file(filename: str) -> list[Sequence]:
+    """
+    Reads sequences from a FASTA file and returns a list of sequences.
+
+    Parameters
+    ----------
+    filename : str
+        Path to the FASTA file to read.
+
+    Returns
+    -------
+    list of Sequence
+        A list containing the parsed sequences from the specified FASTA file.
+
+    Raises
+    ------
+    SystemExit
+        If Biopython is not installed or if the specified FASTA file
+        does not exist.
+    """
+    try:
+        fasta_file = fasta2seq(filename)
+        sequences = []
+        for entry in fasta_file:
+            if entry is None:
+                logger.warning("Failed to read sequence from FASTA file.")
+                continue
+            sequences.append(entry)
+        if len(sequences) == 0:
+            logger.warning("No valid sequences found in FASTA file.")
+        return sequences
+    except FileNotFoundError as e:
+        exit_on_error(f"FASTA file not found: {e}")
     except ImportError as e:
         exit_on_error(e.msg)
     except Exception as e:
@@ -982,6 +1021,24 @@ class CLI(CommandBase):
             )
         except Exception as e:
             exit_on_error(f"Failed to process existing input file: {filename}\n{e}")
+        return self
+
+    def fasta(self, filename: str) -> Self:
+        """
+        Command to process and incorporate sequences from a FASTA file.
+
+        Parameters
+        ----------
+        filename : str
+            The file path of the FASTA file to be read and processed.
+
+        Returns
+        -------
+        CLI
+            Returns the same instance of the class to enable method chaining.
+        """
+        for seq in read_fasta_file(filename):
+            self._builder.add_sequence(seq)
         return self
 
     def ccd(self, filename: str) -> Self:
