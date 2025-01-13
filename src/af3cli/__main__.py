@@ -10,7 +10,7 @@ from abc import ABCMeta, abstractmethod
 import fire
 
 from .builder import InputBuilder
-from .ligand import Ligand, LigandType
+from .ligand import Ligand, LigandType, sdf2smiles
 from .bond import Bond
 from .sequence import Sequence, SequenceType
 from .sequence import Template, TemplateType, MSA
@@ -94,12 +94,6 @@ def read_sdf_file(filename: str) -> list[str]:
     """
     Reads a Structure Data File (SDF) and converts the molecules into SMILES format.
 
-    This function uses RDKit to process the molecules in an SDF file and converts
-    them into the SMILES string representation. If any molecule cannot be read
-    from the file, it will be skipped with a warning message. The total number of
-    successfully converted molecules will be logged. If RDKit is not installed,
-    the function will terminate the program with an informative error message.
-
     Parameters
     ----------
     filename : str
@@ -117,14 +111,13 @@ def read_sdf_file(filename: str) -> list[str]:
         If RDKit is not installed on the system.
     """
     try:
-        from rdkit import Chem
-        supplier = Chem.SDMolSupplier(filename)
         smiles = []
-        for mol in supplier:
-            if mol is None:
+        smi_generator = sdf2smiles(filename)
+        for smi in smi_generator:
+            if smi is None:
                 logger.warning("Failed to read molecule from SDF file.")
                 continue
-            smiles.append(Chem.MolToSmiles(mol))
+            smiles.append(smi)
         logger.info(f"Read {len(smiles)} molecules from SDF file.")
         return smiles
     except ImportError as e:
