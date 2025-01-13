@@ -370,7 +370,7 @@ def read_fasta(filename: str) -> Generator[tuple[str, str], None, None]:
         raise ImportError("Please install Biopython to read FASTA files") from e
 
 
-def is_sequence_type(seq_type: SequenceType, seq_str: str) -> bool:
+def is_valid_sequence(seq_type: SequenceType, seq_str: str) -> bool:
     """
     Determines if a given sequence string corresponds to the specified sequence type.
 
@@ -416,9 +416,9 @@ def identify_sequence_type(seq_str: str) -> SequenceType | None:
         Returns None if the sequence is ambiguous (e.g., qualifies as both DNA and RNA)
         or does not fit any of the known sequence types.
     """
-    is_protein = is_sequence_type(SequenceType.PROTEIN, seq_str)
-    is_dna = is_sequence_type(SequenceType.DNA, seq_str)
-    is_rna = is_sequence_type(SequenceType.RNA, seq_str)
+    is_protein = is_valid_sequence(SequenceType.PROTEIN, seq_str)
+    is_dna = is_valid_sequence(SequenceType.DNA, seq_str)
+    is_rna = is_valid_sequence(SequenceType.RNA, seq_str)
 
     if is_dna and is_rna:
         return None

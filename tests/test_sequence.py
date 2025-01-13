@@ -7,7 +7,7 @@ from af3cli.sequence import TemplateType, Template
 from af3cli.sequence import (Modification, ResidueModification,
                              NucleotideModification)
 from af3cli.sequence import MSA
-from af3cli.sequence import is_sequence_type, identify_sequence_type
+from af3cli.sequence import is_valid_sequence, identify_sequence_type
 from af3cli.sequence import read_fasta, fasta2seq
 
 
@@ -310,7 +310,7 @@ def test_sequence_remove_id(
     (SequenceType.DNA, "1234567", False),
 ])
 def test_is_seq_type(seq_type: SequenceType, seq_str: str, result: bool):
-    assert is_sequence_type(seq_type=seq_type, seq_str=seq_str) == result
+    assert is_valid_sequence(seq_type=seq_type, seq_str=seq_str) == result
 
 
 @pytest.mark.parametrize("seq_str,result", [
