@@ -1,10 +1,42 @@
 import pytest
 
+import io
+
 from af3cli.sequence import SequenceType, Sequence
 from af3cli.sequence import TemplateType, Template
 from af3cli.sequence import (Modification, ResidueModification,
                              NucleotideModification)
 from af3cli.sequence import MSA
+from af3cli.sequence import is_valid_sequence, identify_sequence_type
+from af3cli.sequence import read_fasta, fasta2seq
+
+
+@pytest.fixture(scope="module")
+def single_fasta_file():
+    content = (">sp|Q9C0K0|BC11B_HUMAN B-cell\n"
+               "MSRRKQGNPQHLSQRELITPEADH")
+
+    return io.StringIO(content)
+
+
+@pytest.fixture(scope="module")
+def multi_protein_fasta_file():
+    content = (">sp|Q9H165|BC11A_HUMAN\n"
+               "MSRRKQGKPQHLSKREFSPEPLEA\n"
+               ">sp|Q9C0K0|BC11B_HUMAN\n"
+               "MSRRKQGNPQHLSQRELITPEADH")
+    return io.StringIO(content)
+
+
+@pytest.fixture(scope="module")
+def multi_all_fasta_file():
+    content = (">protein\n"
+               "MSRRKQGKPQHLSKREFSPEPLEA\n"
+               ">dna\n"
+               "AATTTTCCCGGGGGTTTTTTAAAA\n"
+               ">rna\n"
+               "AACCCGGGGUUUGGCCGGGAAUUU")
+    return io.StringIO(content)
 
 
 @pytest.mark.parametrize("seq_type,seq_type_value", [
@@ -268,3 +300,57 @@ def test_sequence_remove_id(
     seq = Sequence(seq_type, seq_str, seq_id=seq_id)
     seq.remove_id()
     assert seq.get_id() is None
+
+@pytest.mark.parametrize("seq_type,seq_str,result", [
+    (SequenceType.PROTEIN, "MVKVGVNGF", True),
+    (SequenceType.RNA, "AUGUGUAU", True),
+    (SequenceType.DNA, "GACCTCT", True),
+    (SequenceType.PROTEIN, "AAQAAU", False),
+    (SequenceType.RNA, "ABCDEFG", False),
+    (SequenceType.DNA, "1234567", False),
+])
+def test_is_seq_type(seq_type: SequenceType, seq_str: str, result: bool):
+    assert is_valid_sequence(seq_type=seq_type, seq_str=seq_str) == result
+
+
+@pytest.mark.parametrize("seq_str,result", [
+    ("MVKVGVNGF", SequenceType.PROTEIN),
+    ("AUGUGUAU", SequenceType.RNA),
+    ("GACCTCT", SequenceType.DNA),
+    ("GACCCAAGG", None),
+    ("1234567", None),
+    ("ABCDEFG", None),
+])
+def test_identify_seq_type(seq_str: str, result: SequenceType | None):
+    assert identify_sequence_type(seq_str=seq_str) == result
+
+
+def test_read_fasta_single(single_fasta_file):
+    for entry in read_fasta(single_fasta_file):
+        assert entry[0] is not None
+        assert entry[1] is not None
+        assert isinstance(entry[0], str)
+        assert isinstance(entry[1], str)
+        assert entry[1] == "MSRRKQGNPQHLSQRELITPEADH"
+
+
+def test_fasta2seq_single(single_fasta_file):
+    for entry in fasta2seq(single_fasta_file):
+        assert entry is not None
+        assert isinstance(entry, Sequence)
+        assert entry.seq_type == SequenceType.PROTEIN
+        assert entry.seq_str == "MSRRKQGNPQHLSQRELITPEADH"
+
+
+def test_fasta2seq_multi(multi_protein_fasta_file):
+    for entry in fasta2seq(multi_protein_fasta_file):
+        assert entry is not None
+        assert isinstance(entry, Sequence)
+        assert entry.seq_type == SequenceType.PROTEIN
+
+
+def test_fasta2seq_multi_all(multi_all_fasta_file):
+    for entry in fasta2seq(multi_all_fasta_file):
+        assert entry is not None
+        assert isinstance(entry, Sequence)
+        assert entry.seq_type is not None

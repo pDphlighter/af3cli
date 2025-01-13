@@ -1,5 +1,6 @@
 from enum import StrEnum
 from abc import ABCMeta
+from typing import Generator
 
 from .mixin import DictMixin
 from .exception import AFTemplateError
@@ -334,3 +335,124 @@ class Sequence(IDRecord, DictMixin):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}({self.seq_type.name})>"
+
+
+def read_fasta(filename: str) -> Generator[tuple[str, str], None, None]:
+    """
+    Reads a FASTA file and yields sequences with their identifiers as tuples.
+
+    This function utilizes Biopython's SeqIO to parse a given FASTA file and
+    yield tuples containing sequence identifiers and their corresponding
+    sequences. The function ensures that Biopython is installed and raises
+    an appropriate error if it is not available.
+
+    Parameters
+    ----------
+    filename : str
+        Path to the FASTA file to be read.
+
+    Yields
+    ------
+    tuple of (str, str)
+        A tuple where the first element is the sequence identifier, and the
+        second element is the sequence as a string.
+
+    Raises
+    ------
+    ImportError
+        If Biopython is not installed and cannot be imported.
+    """
+    try:
+        from Bio import SeqIO
+        for entry in SeqIO.parse(filename, "fasta"):
+            yield entry.id, str(entry.seq).upper()
+    except ImportError as e:
+        raise ImportError("Please install Biopython to read FASTA files") from e
+
+
+def is_valid_sequence(seq_type: SequenceType, seq_str: str) -> bool:
+    """
+    Determines if a given sequence string corresponds to the specified sequence type.
+
+    Parameters
+    ----------
+    seq_type : SequenceType
+        Type of the sequence to validate.
+    seq_str : str
+        The sequence string to validate against the specified sequence type.
+
+    Returns
+    -------
+    bool
+        True if all characters in `seq_str` belong to the valid character set for
+        the specified `seq_type`; False otherwise.
+    """
+    SEQ_CHAR_SETS = {
+        SequenceType.PROTEIN: set("ACDEFGHIKLMNPQRSTVWY"),
+        SequenceType.DNA: set("ACGT"),
+        SequenceType.RNA: set("ACGU")
+    }
+    return all(char in SEQ_CHAR_SETS[seq_type] for char in seq_str)
+
+
+def identify_sequence_type(seq_str: str) -> SequenceType | None:
+    """
+    Identifies the type of a given biological sequence based on its composition.
+    The function examines if the sequence can be classified as DNA, RNA, or
+    protein, and returns the corresponding sequence type.
+
+    Parameters
+    ----------
+    seq_str : str
+        The biological sequence to be analyzed.
+
+    Returns
+    -------
+    SequenceType or None
+        The type of the sequence, identified as one of the following:
+        - SequenceType.DNA: If the sequence is identified as DNA.
+        - SequenceType.RNA: If the sequence is identified as RNA.
+        - SequenceType.PROTEIN: If the sequence is identified as protein.
+        Returns None if the sequence is ambiguous (e.g., qualifies as both DNA and RNA)
+        or does not fit any of the known sequence types.
+    """
+    is_protein = is_valid_sequence(SequenceType.PROTEIN, seq_str)
+    is_dna = is_valid_sequence(SequenceType.DNA, seq_str)
+    is_rna = is_valid_sequence(SequenceType.RNA, seq_str)
+
+    if is_dna and is_rna:
+        return None
+    elif is_dna:
+        return SequenceType.DNA
+    elif is_rna:
+        return SequenceType.RNA
+    elif is_protein:
+        return SequenceType.PROTEIN
+    return None
+
+
+def fasta2seq(filename: str) -> Generator[Sequence | None, None, None]:
+    """
+    Converts a FASTA file into a sequence generator.
+
+    Parameters
+    ----------
+    filename : str
+        The path to the FASTA file to be read.
+
+    Yields
+    ------
+    Sequence or None
+        A `Sequence` object if the sequence type can be identified; otherwise, `None`.
+    """
+    for entry_name, entry_seq in read_fasta(filename):
+        if entry_seq is None:
+            yield None
+            continue
+
+        seq_type = identify_sequence_type(entry_seq)
+        if seq_type is None:
+            yield None
+            continue
+
+        yield Sequence(seq_type=seq_type, seq_str=entry_seq)
