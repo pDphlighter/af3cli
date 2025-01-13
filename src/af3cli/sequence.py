@@ -365,7 +365,7 @@ def read_fasta(filename: str) -> Generator[tuple[str, str], None, None]:
     try:
         from Bio import SeqIO
         for entry in SeqIO.parse(filename, "fasta"):
-            yield entry.id, str(entry.seq)
+            yield entry.id, str(entry.seq).upper()
     except ImportError as e:
         raise ImportError("Please install Biopython to read FASTA files") from e
 
@@ -448,7 +448,11 @@ def fasta2seq(filename: str) -> Generator[Sequence | None, None, None]:
     for entry_name, entry_seq in read_fasta(filename):
         if entry_seq is None:
             yield None
+            continue
+
         seq_type = identify_sequence_type(entry_seq)
         if seq_type is None:
             yield None
+            continue
+
         yield Sequence(seq_type=seq_type, seq_str=entry_seq)
