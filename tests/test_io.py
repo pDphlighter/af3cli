@@ -3,6 +3,7 @@ import io
 from pathlib import Path
 import pytest
 
+from af3cli import InputFile
 from af3cli.io import read_json, write_json
 
 
@@ -98,11 +99,11 @@ def test_json_rw(
         tmp_file_read: Path,
         sample_data_dict: dict
 ) -> None:
-    afinput = read_json(str(tmp_file_read.resolve()))
-    write_json(str(tmp_file_write), afinput)
+    afinput = InputFile.read(str(tmp_file_read.resolve()))
+    afinput.write(str(tmp_file_write))
     assert tmp_file_write.exists()
 
-    afinput = read_json(str(tmp_file_write.resolve()))
+    afinput = InputFile.read(str(tmp_file_write.resolve()))
     assert afinput.name == sample_data_dict["name"]
     assert afinput.version == sample_data_dict["version"]
     assert afinput.dialect == sample_data_dict["dialect"]

@@ -202,3 +202,35 @@ class InputFile(DictMixin):
             content["userCCD"] = self.user_ccd
 
         return content
+
+    @staticmethod
+    def read(filename) -> InputFile:
+        """
+        Reads a file and returns its content as an instance of InputFile.
+
+        Parameters
+        ----------
+        filename : str
+            The path to the JSON file to be read.
+
+        Returns
+        -------
+        InputFile
+            An instance of InputFile that contains the deserialized content
+            of the provided JSON file.
+        """
+        from .io import read_json
+        return read_json(filename)
+
+    def write(self, filename) -> None:
+        """
+        Writes the current object's data to a JSON file.
+
+        Parameters
+        ----------
+        filename : str
+            The path to the file where the object's data will be saved.
+            The file must be writable.
+        """
+        from .io import write_json
+        write_json(filename, self)
