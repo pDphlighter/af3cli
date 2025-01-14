@@ -5,4 +5,4 @@ from .sequence import ResidueModification, NucleotideModification
 from .bond import Atom, Bond
 from .input import InputFile
 from .builder import InputBuilder
-from .io import JSONReader, JSONWriter
+from .io import read_json, write_json
