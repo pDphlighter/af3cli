@@ -3,7 +3,7 @@ import io
 from pathlib import Path
 import pytest
 
-from af3cli.io import JSONWriter, JSONReader
+from af3cli.io import read_json, write_json
 
 
 @pytest.fixture(scope="module")
@@ -80,7 +80,7 @@ def tmp_file_read(tmp_path: Path, sample_data_dict: dict) -> Path:
 
 
 def test_json_reader(tmp_file_read: Path, sample_data_dict: dict) -> None:
-    afinput = JSONReader.read(str(tmp_file_read.resolve()))
+    afinput = read_json(str(tmp_file_read.resolve()))
     assert afinput.name == sample_data_dict["name"]
     assert afinput.version == sample_data_dict["version"]
     assert afinput.dialect == sample_data_dict["dialect"]
@@ -98,11 +98,11 @@ def test_json_rw(
         tmp_file_read: Path,
         sample_data_dict: dict
 ) -> None:
-    afinput = JSONReader.read(str(tmp_file_read.resolve()))
-    JSONWriter.write(str(tmp_file_write), afinput)
+    afinput = read_json(str(tmp_file_read.resolve()))
+    write_json(str(tmp_file_write), afinput)
     assert tmp_file_write.exists()
 
-    afinput = JSONReader.read(str(tmp_file_write.resolve()))
+    afinput = read_json(str(tmp_file_write.resolve()))
     assert afinput.name == sample_data_dict["name"]
     assert afinput.version == sample_data_dict["version"]
     assert afinput.dialect == sample_data_dict["dialect"]
