@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Example
+# Human SIRT2 Histone Deacetylase
+# Details:
+# - Protein Data Bank (PDB) Entry: 1J8F
+# - Reference: https://www.rcsb.org/structure/1J8F
+# - Simplified demonstration uses one monomer with one associated zinc ion for clarity.
+
+# Define constants
+filename="example_1J8F_cli.json"
+job_name="example_1J8F_cli_job"
+
+# Protein sequence for SIRT2 monomer fetched from the FASTA file
+protein_sequence="\
+GEADMDFLRNLFSQTLSLGSQKERLLDELTLEGVARYMQSERCRRVICLVGAGISTSAGIPDFRSPSTGLYDNLEKYH\
+LPYPEAIFEISYFKKHPEPFFALAKELYPGQFKPTICHYFMRLLKDKGLLLRCYTQNIDTLERIAGLEQEDLVEAHGT\
+FYTSHCVSASCRHEYPLSWMKEKIFSEVTPKCEDCQSLVKPDIVFFGESLPARFFSCMQSDFLKVDLLLVMGTSLQVQ\
+PFASLISKAPLSTPRLLINKEKAGQSDPFLGMIMGLGGGMDFDSKKAYRDVAWLGECDQGCLALAELLGWKKELEDLV\
+RREHASIDAQS\
+"
+
+# Zinc ion SMILES representation
+zinc_ion_ccd="ZN"
+
+# Run the command to configure and add protein and ligand data
+python -m af3cli config --filename "${filename}" --jobname "${job_name}" \
+  - protein add --sequence "${protein_sequence}" \
+  - ligand add --ccd "${zinc_ion_ccd}" \
+  - debug --show  # Exclude this line to enable .json file creation
