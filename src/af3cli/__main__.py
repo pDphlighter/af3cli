@@ -9,6 +9,7 @@ from abc import ABCMeta, abstractmethod
 
 import fire
 
+from af3cli import InputFile
 from .builder import InputBuilder
 from .ligand import Ligand, LigandType, sdf2smiles
 from .bond import Bond
@@ -18,7 +19,6 @@ from .sequence import (Modification, NucleotideModification,
                        ResidueModification)
 from .sequence import read_fasta, fasta2seq
 from .sequence import is_valid_sequence
-from .io import read_json, write_json
 
 # CONSTANTS
 MAX_RANDOM_SEED: int = 99999
@@ -1012,7 +1012,7 @@ class CLI(CommandBase):
             Returns the same instance of the class to enable method chaining.
         """
         try:
-            other_input = read_json(filename)
+            other_input = InputFile.read(filename)
             if noreset:
                 logger.warning("Skipping reset might cause ID clashes.")
 
@@ -1159,7 +1159,7 @@ class CLI(CommandBase):
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint(af_input_file.to_dict())
         else:
-            write_json(self._filename, af_input_file)
+            af_input_file.write(self._filename)
             logger.info(f"Writing AF3 input file to '{self._filename}'")
 
 
