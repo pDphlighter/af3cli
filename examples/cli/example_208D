@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Example
+# simple dsDNA
+# Details:
+# - Protein Data Bank (PDB) Entry: 208D
+# - Reference: https://www.rcsb.org/structure/208D
+
+# Define constants
+filename="example_208D_cli.json"
+job_name="example_208D_cli_job"
+
+# DNA sequence fetched from FASTA file
+dna_sequence="GCGAATTCG"
+# dsDNA
+number_of_strands=2
+
+# Run the command to configure and add DNA data
+python -m af3cli config --filename "${filename}" --jobname "${job_name}" \
+  - dna add --sequence "${dna_sequence}" --num ${number_of_strands} \
+  - debug --show  # Exclude this line to enable .json file creation
