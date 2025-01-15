@@ -155,11 +155,11 @@ def test_sequence_init_mod(
         seq_str: str, seq_id: list[str] | str | None,
         seq_mods: list[Modification]
 ) -> None:
-    seq = Sequence(seq_type, seq_str, seq_id=seq_id, seq_mod=seq_mods)
+    seq = Sequence(seq_type, seq_str, seq_id=seq_id, modifications=seq_mods)
     assert seq.seq_type == seq_type
     assert seq.seq_str == seq_str
     assert seq.get_id() == seq_id
-    assert seq.seq_mod == seq_mods
+    assert seq.modifications == seq_mods
     if seq_id is not None:
         assert seq.num == len(seq_id)
     else:

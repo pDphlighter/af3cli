@@ -597,7 +597,7 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
             seq_str=self._sequence_str,
             num=self._sequence_num,
             seq_id=self._sequence_ids,
-            seq_mod=self._modifications or None,
+            modifications=self._modifications or None,
             templates=self._templates or None,
             msa=self._msa
         )

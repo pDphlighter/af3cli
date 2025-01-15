@@ -249,7 +249,7 @@ class Sequence(IDRecord, DictMixin):
         The string representation of the sequence.
     msa : MSA or None
         The multiple sequence alignment (MSA) information, if available.
-    seq_mod : list of Modification
+    modifications : list of Modification
         Modifications associated with the sequence.
     templates : list of Template
         Templates associated with the sequence. Supported only for protein sequences.
@@ -266,7 +266,7 @@ class Sequence(IDRecord, DictMixin):
         seq_str: str,
         num: int | None = None,
         seq_id: list[str] | None = None,
-        seq_mod: list[Modification] | None = None,
+        modifications: list[Modification] | None = None,
         templates: list[Template] | None = None,
         msa: MSA | None = None,
     ):
@@ -275,9 +275,9 @@ class Sequence(IDRecord, DictMixin):
         self.seq_type: SequenceType = seq_type
         self.msa: MSA | None = msa
 
-        if seq_mod is None:
-            seq_mod = []
-        self.seq_mod: list[Modification] = seq_mod
+        if modifications is None:
+            modifications = []
+        self.modifications: list[Modification] = modifications
 
         if seq_type != SequenceType.PROTEIN and templates is not None:
             raise AFTemplateError("Templates are only supported for proteins.")
@@ -307,18 +307,20 @@ class Sequence(IDRecord, DictMixin):
         Returns
         -------
         bool
-            True if all modifications in `seq_mod` are valid for the given
-            `seq_type`, or if `seq_mod` is empty. False otherwise.
+            True if all modifications in `modifications` are valid for the given
+            `seq_type`, or if `modifications` is empty. False otherwise.
         """
-        if len(self.seq_mod) == 0:
+        if len(self.modifications) == 0:
             return True
         if self.seq_type == SequenceType.PROTEIN:
             return all(
-                isinstance(mod, ResidueModification) for mod in self.seq_mod
+                isinstance(mod, ResidueModification)
+                for mod in self.modifications
             )
         else:
             return all(
-                isinstance(mod, NucleotideModification) for mod in self.seq_mod
+                isinstance(mod, NucleotideModification)
+                for mod in self.modifications
             )
 
     def to_dict(self) -> dict:
@@ -356,8 +358,8 @@ class Sequence(IDRecord, DictMixin):
         content = dict()
         content["id"] = self.get_id()
         content["sequence"] = self.seq_str
-        if len(self.seq_mod):
-            content["modifications"] = [m.to_dict() for m in self.seq_mod]
+        if len(self.modifications):
+            content["modifications"] = [m.to_dict() for m in self.modifications]
         if len(self.templates):
             content["templates"] = [t.to_dict() for t in self.templates]
         if self.msa is not None:
@@ -366,7 +368,7 @@ class Sequence(IDRecord, DictMixin):
 
     def __str__(self) -> str:
         display_template = "T" if len(self.templates) else ""
-        display_mod = "M" if len(self.seq_mod) else ""
+        display_mod = "M" if len(self.modifications) else ""
         display_msa = "MSA" if self.msa is not None else ""
         display_flags = ",".join(
             v for v in [display_template, display_mod, display_msa] if v

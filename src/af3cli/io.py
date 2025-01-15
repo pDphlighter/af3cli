@@ -321,7 +321,7 @@ def _parse_sequence(seq_type: str, seq_content: dict) -> Sequence:
         seq_type=seq_type,
         seq_str=seq_content["sequence"],
         seq_id=seq_id,
-        seq_mod=modifications,
+        modifications=modifications,
         templates=templates,
         msa=msa,
     )
