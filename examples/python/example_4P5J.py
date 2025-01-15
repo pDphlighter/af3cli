@@ -16,7 +16,7 @@ from af3cli.sequence import read_fasta
 FILENAME = "example_4P5J_python.py"
 JOB_NAME = "example_4P5J_py_job"
 INPUT_SEQUENCE_TYPE = SequenceType.RNA
-INPUT_FASTA_FILEPATH = str(Path(__file__).resolve().parent.parent / "data/rcsb_pdb_4P5J.fasta")
+INPUT_FASTA_FILEPATH = str(Path(__file__).resolve().parent / "../data/rcsb_pdb_4P5J.fasta")
 
 # Create RNA sequence object
 for _, fasta_sequence_string in read_fasta(INPUT_FASTA_FILEPATH):
