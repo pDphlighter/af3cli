@@ -5,9 +5,23 @@ class AFMissingFieldError(Exception):
     pass
 
 
+class AFSequenceError(Exception):
+    """
+        Represents a custom exception for sequence-related errors.
+    """
+    pass
+
+
 class AFTemplateError(Exception):
     """
     Represents a custom exception for template-related errors.
+    """
+    pass
+
+
+class AFModificationError(Exception):
+    """
+    Represents a custom exception for modification-related errors.
     """
     pass
 

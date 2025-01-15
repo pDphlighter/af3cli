@@ -597,7 +597,7 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
             seq_str=self._sequence_str,
             num=self._sequence_num,
             seq_id=self._sequence_ids,
-            seq_mod=self._modifications or None,
+            modifications=self._modifications or None,
             templates=self._templates or None,
             msa=self._msa
         )
@@ -1003,7 +1003,7 @@ class CLI(CommandBase):
             If True, merges bonded atoms data.
             Defaults to False.
         seeds : bool, optional
-            If True, merges seeds without removing duplicates.
+            If True, merges seeds and removes duplicates.
             Defaults to False.
 
         Returns
@@ -1064,7 +1064,7 @@ class CLI(CommandBase):
             Returns the same instance of the class to enable method chaining.
         """
         user_ccd = read_file_to_str(filename)
-        self._builder.add_user_ccd(user_ccd)
+        self._builder.set_user_ccd(user_ccd)
         return self
 
     def seeds(self, values: list[int] = None, num: int = None) -> Self:
@@ -1132,15 +1132,15 @@ class CLI(CommandBase):
     @hide_from_cli
     def builder(self) -> InputBuilder:
         """
-            Returns the builder instance associated with this object.
+        Returns the builder instance associated with this object.
 
-            This method provides access to the builder object which can be used
-            to construct and configure the necessary inputs from subcommands.
+        This method provides access to the builder object which can be used
+        to construct and configure the necessary inputs from subcommands.
 
-            Returns
-            -------
-            InputBuilder
-                The builder instance used for constructing input files.
+        Returns
+        -------
+        InputBuilder
+            The builder instance used for constructing input files.
         """
         return self._builder
 

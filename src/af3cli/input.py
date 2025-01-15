@@ -41,10 +41,11 @@ class InputFile(DictMixin):
         self.version: int = version
         self.dialect: str = dialect
         self.user_ccd: str = user_ccd
+        self.seeds: set[int] = set()
 
         if seeds is None:
             seeds = [1]
-        self.seeds: list[int] = seeds
+        self.seeds.update(seeds)
 
         self.ligands: list[Ligand] = []
         self.bonded_atoms: list[Bond] = []
@@ -154,7 +155,7 @@ class InputFile(DictMixin):
         if reset:
             tmp_input.reset_ids()
         if seeds:
-            self.seeds.extend(tmp_input.seeds)
+            self.seeds.update(tmp_input.seeds)
         if bonded_atoms:
             for bond in tmp_input.bonded_atoms:
                 self.bonded_atoms.append(bond)
@@ -186,7 +187,7 @@ class InputFile(DictMixin):
         content["name"] = self.name
         content["version"] = self.version
         content["dialect"] = self.dialect
-        content["modelSeeds"] = self.seeds
+        content["modelSeeds"] = list(self.seeds)
         content["sequences"] = []
 
         for seqtype in [self.sequences, self.ligands]:
