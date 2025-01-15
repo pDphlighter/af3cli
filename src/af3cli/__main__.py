@@ -1003,7 +1003,7 @@ class CLI(CommandBase):
             If True, merges bonded atoms data.
             Defaults to False.
         seeds : bool, optional
-            If True, merges seeds without removing duplicates.
+            If True, merges seeds and removes duplicates.
             Defaults to False.
 
         Returns

@@ -48,7 +48,7 @@ def test_builder_set_name(builder: InputBuilder) -> None:
 ])
 def test_builder_set_seeds(builder: InputBuilder, seeds: list[int]) -> None:
     builder.set_seeds(seeds)
-    assert builder._afinput.seeds == seeds
+    assert sorted(list(builder._afinput.seeds)) == sorted(seeds)
 
 
 def test_builder_set_version(builder: InputBuilder) -> None:

@@ -102,7 +102,7 @@ class InputBuilder(object):
         Self
             Returns the instance of the object, allowing for method chaining.
         """
-        self._afinput.seeds = seeds
+        self._afinput.seeds = set(seeds)
         return self
 
     def set_version(self, version: int) -> Self:

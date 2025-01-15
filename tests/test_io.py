@@ -85,7 +85,7 @@ def test_json_reader(tmp_file_read: Path, sample_data_dict: dict) -> None:
     assert afinput.name == sample_data_dict["name"]
     assert afinput.version == sample_data_dict["version"]
     assert afinput.dialect == sample_data_dict["dialect"]
-    assert afinput.seeds == sample_data_dict["modelSeeds"]
+    assert sorted(list(afinput.seeds)) == sorted(sample_data_dict["modelSeeds"])
     assert len(afinput.sequences) == len(sample_data_dict["sequences"])
 
 
@@ -107,5 +107,5 @@ def test_json_rw(
     assert afinput.name == sample_data_dict["name"]
     assert afinput.version == sample_data_dict["version"]
     assert afinput.dialect == sample_data_dict["dialect"]
-    assert afinput.seeds == sample_data_dict["modelSeeds"]
+    assert sorted(list(afinput.seeds)) == sorted(sample_data_dict["modelSeeds"])
     assert len(afinput.sequences) == len(sample_data_dict["sequences"])
