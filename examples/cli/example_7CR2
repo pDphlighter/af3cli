@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Example
+# Human Kv7.2 (KCNQ2) with retigabine
+# Details:
+# - Protein Data Bank (PDB) Entry: 7CR2
+# - Reference: https://www.rcsb.org/structure/7CR2
+
+# Define constants
+filename="example_7CR2_cli.json"
+job_name="example_7CR2_cli_job"
+
+# Protein sequence fetched from FASTA file
+protein_sequence="\
+MAGKPPKRNAFYRKLQNFLYNVLERPRGWAFIYHAYVFLLVFSCLVLSVFSTIKEYEKSSEGALYILEIVTIVVFGVE\
+YFVRIWAAGCCCRYRGWRGRLKFARKPFCVIDIMVLIASIAVLAAGSQGNVFATSALRSLRFLQILRMIRMDRRGGTW\
+KLLGSVVYAHSKELVTAWYIGFLCLILASFLVYLAEKGENDHFDTYADALWWGLITLTTIGYGDKYPQTWNGRLLAAT\
+FTLIGVSFFALPAGILGSGFALKVQEQHRQKHFEKRRNPAAGLIQSAWRFYATNLSRTDLHSTWQYYERTVTVPMYSS\
+QTQTYGASRLIPPLNQLELLRNLKSKSGLAFRKDPPPEPSPSKGSPCRGPLCGCCPGRSSQKVSLKDRVFSSPRGVAA\
+KGKGSPQAQTVRRSPSADQSLEDSPSKVPKSWSFGDRSRARQAFRIKGAASRQNSEEASLPGEDIVDDKSCPCEFVTE\
+DLTPGLKVSIRAVCVMRFLVSKRKFKESLRPYDVMDVIEQYSAGHLDMLSRIKSLQSRVDQIVGRGPAITDKDRTKGP\
+AEAELPEDPSMMGRLGKVEKQVLSMEKKLDFLVNIYMQRMGIPPTETEAYFGAKEPEPAPPYHSPEDSREHVDRHGCI\
+VKIVRSSSSTGQKNFSVEGGSSGGWSHPQFEK\
+"
+# Homotetrameric channel protein
+number_of_chains=4
+
+# Retigabine SMILES representation
+retigabine_smiles="CCOC(=O)NC1=C(C=C(C=C1)NCC2=CC=C(C=C2)F)N"
+
+# Run the command to configure and add protein and ligand data
+python -m af3cli config --filename "${filename}" --jobname "${job_name}" \
+  - protein add --sequence "${protein_sequence}" --num ${number_of_chains} \
+  - ligand add --smiles "${retigabine_smiles}" \
+  - debug --show  # Exclude this line to enable .json file creation
