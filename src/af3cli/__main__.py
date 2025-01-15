@@ -1132,15 +1132,15 @@ class CLI(CommandBase):
     @hide_from_cli
     def builder(self) -> InputBuilder:
         """
-            Returns the builder instance associated with this object.
+        Returns the builder instance associated with this object.
 
-            This method provides access to the builder object which can be used
-            to construct and configure the necessary inputs from subcommands.
+        This method provides access to the builder object which can be used
+        to construct and configure the necessary inputs from subcommands.
 
-            Returns
-            -------
-            InputBuilder
-                The builder instance used for constructing input files.
+        Returns
+        -------
+        InputBuilder
+            The builder instance used for constructing input files.
         """
         return self._builder
 
