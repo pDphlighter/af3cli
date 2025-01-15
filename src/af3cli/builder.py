@@ -190,7 +190,7 @@ class InputBuilder(object):
         self._afinput.bonded_atoms.append(bond)
         return self
 
-    def add_user_ccd(self, user_ccd: str) -> Self:
+    def set_user_ccd(self, user_ccd: str) -> Self:
         """
         Sets the userccd attribute as string in the `InputFile` instance.
 

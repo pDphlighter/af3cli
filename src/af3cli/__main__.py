@@ -1064,7 +1064,7 @@ class CLI(CommandBase):
             Returns the same instance of the class to enable method chaining.
         """
         user_ccd = read_file_to_str(filename)
-        self._builder.add_user_ccd(user_ccd)
+        self._builder.set_user_ccd(user_ccd)
         return self
 
     def seeds(self, values: list[int] = None, num: int = None) -> Self:

@@ -90,7 +90,7 @@ def test_builder_add_bond(builder: InputBuilder, sample_bond: Bond) -> None:
 
 
 def test_builder_user_ccd(builder: InputBuilder) -> None:
-    builder.add_user_ccd("ccdString")
+    builder.set_user_ccd("ccdString")
     assert builder._afinput.user_ccd == "ccdString"
 
 

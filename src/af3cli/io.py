@@ -388,6 +388,6 @@ def read_json(filename: str, check: bool = True) -> InputFile:
             builder.add_bonded_atom_pair(bond)
 
     if "userCCD" in data:
-        builder.add_user_ccd(data["userCCD"])
+        builder.set_user_ccd(data["userCCD"])
 
     return builder.build()
