@@ -3,7 +3,7 @@ from abc import ABCMeta
 from typing import Generator
 
 from .mixin import DictMixin
-from .exception import AFTemplateError
+from .exception import AFTemplateError, AFModificationError
 from .seqid import IDRecord
 
 
@@ -299,6 +299,27 @@ class Sequence(IDRecord, DictMixin):
                 raise ValueError((f"Sequence ID length ({len(seq_id)}) does "
                                   f"not match sequence number ({num})."))
 
+    def _validate_modification_types(self):
+        """
+        Checks the validity of sequence modifications against the sequence type.
+
+        Returns
+        -------
+        bool
+            True if all modifications in `seq_mod` are valid for the given
+            `seq_type`, or if `seq_mod` is empty. False otherwise.
+        """
+        if len(self.seq_mod) == 0:
+            return True
+        if self.seq_type == SequenceType.PROTEIN:
+            return all(
+                isinstance(mod, ResidueModification) for mod in self.seq_mod
+            )
+        else:
+            return all(
+                isinstance(mod, NucleotideModification) for mod in self.seq_mod
+            )
+
     def to_dict(self) -> dict:
         """
          Convert the object to a dictionary representation.
@@ -312,7 +333,17 @@ class Sequence(IDRecord, DictMixin):
          -------
          dict
              A dictionary representation of the object.
+
+         Raises
+         ------
+         AFModificationError
+             If the modifications are invalid for the sequence type.
          """
+        if not self._validate_modification_types():
+            raise AFModificationError(
+                f"Invalid modification types for sequence {self}."
+            )
+
         content = dict()
         content["id"] = self.get_id()
         content["sequence"] = self.seq_str

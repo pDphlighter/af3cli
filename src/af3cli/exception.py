@@ -12,6 +12,13 @@ class AFTemplateError(Exception):
     pass
 
 
+class AFModificationError(Exception):
+    """
+    Represents a custom exception for modification-related errors.
+    """
+    pass
+
+
 class AFMSAError(Exception):
     """
     Represents a custom exception for MSA-related errors.
