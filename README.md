@@ -22,20 +22,20 @@ For a detailed overview of all available JSON fields check the [AlphaFold3 input
 
 You can display the help and overview of the available CLI commands with the following statement.
 
-```bash
+```shell
 af3cli -- --help
 ```
 
 All commands and sub-commands are separated with `-` to enable chaining, allowing e.g. several sequences, ligands, bonds etc. to be added.
 
-```bash
+```shell
 af3cli toplevel sub [...] - sub [...] \
     - toplevel sub [...]
 ```
 
 You can use the `debug` command to display the final file without writing it.
 
-```bash
+```shell
 af3cli debug --show - [...]
 ```
 
@@ -43,7 +43,7 @@ af3cli debug --show - [...]
 
 The `config` command is used to manage basic settings, such as the file name of the JSON file to be written, the name of the job or the respective version.
 
-```bash
+```shell
 af3cli config -f "filename.json" -j "jobname" -v 2
 ```
 
@@ -67,7 +67,7 @@ You can also initialize the `InputBuilder` with an existing `InputFile` object i
 
 It is required that at least one random seed is specified. The default value is therefore 1. Otherwise, you can either specify a number of values to generate a list of random seeds or pass a list of integers yourself.
 
-```bash
+```shell
 af3cli seeds -n 10 - ...
 # generates 10 random numbers
 
@@ -84,7 +84,7 @@ builder.set_seeds([1, 2, 3])
 
 Adding sequences works basically the same for all three available types, but not all JSON fields are supported for each type. The corresponding subcommands therefore differ in some cases.
 
-```bash
+```shell
 af3cli [...] \
     - protein add "MVKLAGST" \ # positional argument
     - protein add --sequence "AAQAA" \
@@ -111,13 +111,13 @@ builder.add_sequence(protein_seq)
 
 As it is often not very practical to add many or particularly long sequences via the CLI, it is possible to read the respective sequence from a FASTA file. To use this feature, [Biopython](https://github.com/biopython/biopython) must be installed as an optional dependency.
 
-```bash
+```shell
 af3cli protein add --sequence <filename> --fasta
 ```
 
 Each sequence command expects exactly one single sequence. Otherwise it is not possible to add additional fields, such as modifications or templates. However, it is still possible to read several sequences from a FASTA file if the additional features are not required. For even more advanced tasks, the Python API must otherwise be used.
 
-```bash
+```shell
 af3cli [...] - fasta [--filename] <filename>
 ```
 
@@ -141,7 +141,7 @@ for fasta_id, seq_str in read_fasta(filename):
 
 By applying the `modification` subcommand, any number of modifications can be added to the sequences with the respective CCD identifier and position. The different fields in the JSON file are automatically inserted correctly based on the sequence type.
 
-```bash
+```shell
 # as positional arguments
 af3cli [...] protein [...] - modification "SEP" 5
 # or with explicit argument names
@@ -172,7 +172,7 @@ protein_seq.modifications.append(rmod)
 
 For protein sequences, it is possible to specify multiple structural templates in mmCIF format as a string or path. Since it is completely impractical to use strings via the CLI tool, the file must be submitted as plain text and is then read in its entirety as a string. 
 
-```bash
+```shell
 # read the file as string with the '--read' flag
 af3cli [...] protein [...] - template [--mmcif] <filename> --read
 # keep relative/absolute path
@@ -213,7 +213,7 @@ Please refer to the [AlphaFold3 input documentation](https://github.com/google-d
 
 The A3M-formatted content can be specified either as a path or as a string (mutally exclusive).
 
-```bash
+```shell
 af3cli [...] protein [...] msa --paired ... --unpaired ...
 af3cli [...] protein [...] msa --pairedpath ... --unpairedpath ...
 ```
@@ -243,7 +243,7 @@ protein_seq.msa = msa
 
 The ligands are treated in a generally similar way to the sequences and can be defined either as SMILES or with a corresponding CCD identifier. SDF files can also be read and converted to SMILES via an optional [RDKit](https://github.com/rdkit/rdkit) dependency. If there are multiple entries in the SDF, they are added as individual ligands. Ions are simply treated as ligands in AlphaFold3.
 
-```bash
+```shell
 af3cli [...] \
     - ligand add --smiles "CCC" \
     - ligand add --ccd "MG" \
@@ -276,7 +276,7 @@ Please refer to the [AlphaFold3 input documentation](https://github.com/google-d
 
 The entire file content is stored as a string in the JSON file and is only stored in a variable here. A plain text file must, therefore, simply be specified for the CLI.
 
-```bash
+```shell
 af3cli [...] ccd [--filename] <filename>
 ```
 
@@ -290,7 +290,7 @@ builder.set_user_ccd(filecontent)
 
 The bonded atom pairs are defined in the JSON file as a list of lists, each of which contains the residue number, the chain ID, and the atom name. To make it as easy as possible to add new bonds, a string format is used, which is then translated into the correct format.
 
-```bash
+```shell
 # R: residue number; C: chain ID, N: atom name
 af3cli [...] bond [--add] "R:C:N-R:C:N"
 
@@ -318,14 +318,14 @@ The IDs for sequences, ligands, and ions are normally assigned automatically and
 
 One case where it is necessary to specify the IDs manually is for bonds between different entries, as the chain ID must be specified for the bonded atom pairs (see above).
 
-```bash
+```shell
 # "A,B,..." | "(A,B,...)" | "[A,B,...]" are valid
 af3cli [...] protein add [...] -i "A,B"
 ```
 
 If you only want to calculate homomultimers without specifying an explicit ID, you can also specify a number.
 
-```bash
+```shell
 af3cli [...] protein add [...] -n 2
 
 # works for all sequence types and ligands/ions
@@ -351,7 +351,7 @@ ligand = Ligand(
 
 Occasionally, it can be helpful to create a base file of your system and prepare subsequent AlphaFold3 jobs by merging existing files with new entries. The `merge` command is chainable, allowing to combine several files. However, this should be done with caution if certain IDs, bonds, or seeds are important.
 
-```bash
+```shell
 af3cli [...] merge [--filename] <filename>
 
 # add new sequences
