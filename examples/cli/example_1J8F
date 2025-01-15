@@ -20,7 +20,7 @@ PFASLISKAPLSTPRLLINKEKAGQSDPFLGMIMGLGGGMDFDSKKAYRDVAWLGECDQGCLALAELLGWKKELEDLV\
 RREHASIDAQS\
 "
 
-# Zinc ion SMILES representation
+# Zinc ion CCD representation
 zinc_ion_ccd="ZN"
 
 # Run the command to configure and add protein and ligand data
