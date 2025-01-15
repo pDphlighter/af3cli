@@ -11,7 +11,7 @@ filename="example_4P5J_cli.json"
 job_name="example_4P5J_cli_job"
 
 # Absolute filepath to FASTA file
-filepath_fasta="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")/example_files/rcsb_pdb_4P5J.fasta"
+filepath_fasta="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")/data/rcsb_pdb_4P5J.fasta"
 
 # Run the command to configure and add RNA data
 python -m af3cli config --filename "${filename}" --jobname "${job_name}" \
