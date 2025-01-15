@@ -3,7 +3,8 @@ from abc import ABCMeta
 from typing import Generator
 
 from .mixin import DictMixin
-from .exception import AFTemplateError, AFModificationError
+from .exception import (AFSequenceError, AFTemplateError,
+                        AFModificationError)
 from .seqid import IDRecord
 
 
@@ -336,9 +337,17 @@ class Sequence(IDRecord, DictMixin):
 
          Raises
          ------
+         AFSequenceError
+             If the sequence is invalid for the sequence type.
          AFModificationError
              If the modifications are invalid for the sequence type.
          """
+        if not is_valid_sequence(self.seq_type, self.seq_str):
+            raise AFSequenceError(
+                f"Invalid sequence for sequence type "
+                f"{self.seq_type.name} ({self})."
+            )
+
         if not self._validate_modification_types():
             raise AFModificationError(
                 f"Invalid modification types for sequence {self}."
