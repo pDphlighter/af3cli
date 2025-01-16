@@ -102,7 +102,7 @@ class InputBuilder(object):
         Self
             Returns the instance of the object, allowing for method chaining.
         """
-        self._afinput.seeds = seeds
+        self._afinput.seeds = set(seeds)
         return self
 
     def set_version(self, version: int) -> Self:
@@ -190,7 +190,7 @@ class InputBuilder(object):
         self._afinput.bonded_atoms.append(bond)
         return self
 
-    def add_user_ccd(self, user_ccd: str) -> Self:
+    def set_user_ccd(self, user_ccd: str) -> Self:
         """
         Sets the userccd attribute as string in the `InputFile` instance.
 
