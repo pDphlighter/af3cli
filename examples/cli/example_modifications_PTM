@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# Example
+# fictive sequences and modifications derived from Protein Data Bank (PDB) Entry: 8AW3
+
+# Define file and job name
+filename="example_modifications_PTM.json"
+job_name="example_modifications_PTM_job"
+
+# Define the Protein Sequence
+protein_sequence="\
+MVQDTGKDTNLKGTAEANESVVYCDVFMQAALKEATCALEEGEVPVGCVLVKADSSTAAQAQAGDDLALQKLIVARGR\
+NATNRKGHGLAHAEFVAVEELLRQATAGTSENIGGGGNSGAVSQDLADYVLYVVVEPCIMCAAMLLYNRVRKVYFGCT\
+NPRFGGNGTVLSVHNSYKGCSGEDAALIGYESCGGYRAEEAVVLLQQFYRRENTNAPLGKRKRKD\
+"
+# Define the Protein modifications
+declare -A protein_pos_mod_pairs
+protein_pos_mod_pairs[37]="MCS"
+protein_pos_mod_pairs[78]="AGM"
+protein_pos_mod_pairs[84]="MLY"
+protein_pos_mod_pairs[107]="TPO"
+protein_pos_mod_pairs[192]="PTR"
+
+# Define the RNA Sequence
+rna_sequence="\
+GGCCGCUUAGCACAGUGGCAGUGCACCACUCUCGUAAAGUGGGGGUCGCGAGUUCGAUUCUCGCAGUGGCCUCCA\
+"
+# Define the RNA modifications
+declare -A rna_pos_mod_pairs
+rna_pos_mod_pairs[2]="2MG"
+rna_pos_mod_pairs[14]="MA6"
+rna_pos_mod_pairs[22]="5MU"
+rna_pos_mod_pairs[33]="5MC"
+
+# Define the DNA Sequence
+dna_sequence="\
+ACGTTTCAGAGGCC\
+"
+# Define the DNA modifications
+declare -A dna_pos_mod_pairs
+dna_pos_mod_pairs[1]="6MA"
+dna_pos_mod_pairs[2]="C34"
+dna_pos_mod_pairs[3]="6OG"
+dna_pos_mod_pairs[4]="3DR"
+
+# Define the Ligand: Calcium ion CCD representation
+calcium_ion_ccd="CA"
+
+
+# Initialize the command by defining the configuration filename and job name
+cmd="python -m af3cli config --filename \"${filename}\" --jobname \"${job_name}\""
+
+# Add the protein sequence and apply modifications at specified positions
+cmd+=" - protein add --sequence \"${protein_sequence}\""
+
+for pos in "${!protein_pos_mod_pairs[@]}"; do
+  mod="${protein_pos_mod_pairs[${pos}]}"
+  cmd+=" - modification --pos ${pos} --mod ${mod}"
+done
+
+# Add the RNA sequence and specify modifications at specified positions
+cmd+=" - rna add --sequence \"${rna_sequence}\""
+
+for pos in "${!rna_pos_mod_pairs[@]}"; do
+  mod="${rna_pos_mod_pairs[${pos}]}"
+  cmd+=" - modification --pos ${pos} --mod ${mod}"
+done
+
+# Add the DNA sequence and specify modifications at specified positions
+cmd+=" - dna add --sequence \"${dna_sequence}\""
+
+for pos in "${!dna_pos_mod_pairs[@]}"; do
+  mod="${dna_pos_mod_pairs[${pos}]}"
+  cmd+=" - modification --pos ${pos} --mod ${mod}"
+done
+
+# Add ligands (calcium ions) to the configuration with the specified CCD code and number
+cmd+=" - ligand add --ccd ${calcium_ion_ccd} --num 8"
+
+# Use the debug option to display the configuration details instead of generating the JSON output
+cmd+=" - debug --show"
+
+eval "${cmd}"
+# NOTE: All sequence positions (e.g., for modifications) use 1-based indexing
