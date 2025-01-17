@@ -38,7 +38,7 @@ LIGAND_ID="C"
 BOND_EXPRESSION="B:1:OG-C:1:C1"
 
 
-# Run the command to configure and add protein, ligand and bond data
+# Run the CLI command
 python -m af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - protein add --sequence "${PROTEIN_SEQUENCE_A}" -i ${PROTEIN_ID_A} \
   - protein add --sequence "${PROTEIN_SEQUENCE_B}" -i ${PROTEIN_ID_B} \

@@ -4,81 +4,81 @@
 # fictive sequences and modifications derived from Protein Data Bank (PDB) Entry: 8AW3
 
 # Define file and job name
-filename="example_modifications_PTM.json"
-job_name="example_modifications_PTM_job"
+FILENAME="example_modifications_PTM.json"
+JOB_NAME="example_modifications_PTM_job"
 
 # Define the Protein Sequence
-protein_sequence="\
+PROTEIN_SEQUENCE="\
 MVQDTGKDTNLKGTAEANESVVYCDVFMQAALKEATCALEEGEVPVGCVLVKADSSTAAQAQAGDDLALQKLIVARGR\
 NATNRKGHGLAHAEFVAVEELLRQATAGTSENIGGGGNSGAVSQDLADYVLYVVVEPCIMCAAMLLYNRVRKVYFGCT\
 NPRFGGNGTVLSVHNSYKGCSGEDAALIGYESCGGYRAEEAVVLLQQFYRRENTNAPLGKRKRKD\
 "
 # Define the Protein modifications
-declare -A protein_pos_mod_pairs
-protein_pos_mod_pairs[37]="MCS"
-protein_pos_mod_pairs[78]="AGM"
-protein_pos_mod_pairs[84]="MLY"
-protein_pos_mod_pairs[107]="TPO"
-protein_pos_mod_pairs[192]="PTR"
+declare -A PROTEIN_POS_MOD_PAIRS
+PROTEIN_POS_MOD_PAIRS[37]="MCS"
+PROTEIN_POS_MOD_PAIRS[78]="AGM"
+PROTEIN_POS_MOD_PAIRS[84]="MLY"
+PROTEIN_POS_MOD_PAIRS[107]="TPO"
+PROTEIN_POS_MOD_PAIRS[192]="PTR"
 
 # Define the RNA Sequence
-rna_sequence="\
+RNA_SEQUENCE="\
 GGCCGCUUAGCACAGUGGCAGUGCACCACUCUCGUAAAGUGGGGGUCGCGAGUUCGAUUCUCGCAGUGGCCUCCA\
 "
 # Define the RNA modifications
-declare -A rna_pos_mod_pairs
-rna_pos_mod_pairs[2]="2MG"
-rna_pos_mod_pairs[14]="MA6"
-rna_pos_mod_pairs[22]="5MU"
-rna_pos_mod_pairs[33]="5MC"
+declare -A RNA_POS_MOD_PAIRS
+RNA_POS_MOD_PAIRS[2]="2MG"
+RNA_POS_MOD_PAIRS[14]="MA6"
+RNA_POS_MOD_PAIRS[22]="5MU"
+RNA_POS_MOD_PAIRS[33]="5MC"
 
 # Define the DNA Sequence
-dna_sequence="\
+DNA_SEQUENCE="\
 ACGTTTCAGAGGCC\
 "
 # Define the DNA modifications
-declare -A dna_pos_mod_pairs
-dna_pos_mod_pairs[1]="6MA"
-dna_pos_mod_pairs[2]="C34"
-dna_pos_mod_pairs[3]="6OG"
-dna_pos_mod_pairs[4]="3DR"
+declare -A DNA_POS_MOD_PAIRS
+DNA_POS_MOD_PAIRS[1]="6MA"
+DNA_POS_MOD_PAIRS[2]="C34"
+DNA_POS_MOD_PAIRS[3]="6OG"
+DNA_POS_MOD_PAIRS[4]="3DR"
 
 # Define the Ligand: Calcium ion CCD representation
-calcium_ion_ccd="CA"
+CALCIUM_ION_CCD="CA"
 
 
-# Initialize the command by defining the configuration filename and job name
-cmd="python -m af3cli config --filename \"${filename}\" --jobname \"${job_name}\""
+# Initialize the command by defining the configuration FILENAME and job name
+cmd="python -m af3cli config --filename \"${FILENAME}\" --jobname \"${JOB_NAME}\""
 
 # Add the protein sequence and apply modifications at specified positions
-cmd+=" - protein add --sequence \"${protein_sequence}\""
+cmd+=" - protein add --sequence \"${PROTEIN_SEQUENCE}\""
 
-for pos in "${!protein_pos_mod_pairs[@]}"; do
-  mod="${protein_pos_mod_pairs[${pos}]}"
+for pos in "${!PROTEIN_POS_MOD_PAIRS[@]}"; do
+  mod="${PROTEIN_POS_MOD_PAIRS[${pos}]}"
   cmd+=" - modification --pos ${pos} --mod ${mod}"
 done
 
 # Add the RNA sequence and specify modifications at specified positions
-cmd+=" - rna add --sequence \"${rna_sequence}\""
+cmd+=" - rna add --sequence \"${RNA_SEQUENCE}\""
 
-for pos in "${!rna_pos_mod_pairs[@]}"; do
-  mod="${rna_pos_mod_pairs[${pos}]}"
+for pos in "${!RNA_POS_MOD_PAIRS[@]}"; do
+  mod="${RNA_POS_MOD_PAIRS[${pos}]}"
   cmd+=" - modification --pos ${pos} --mod ${mod}"
 done
 
 # Add the DNA sequence and specify modifications at specified positions
-cmd+=" - dna add --sequence \"${dna_sequence}\""
+cmd+=" - dna add --sequence \"${DNA_SEQUENCE}\""
 
-for pos in "${!dna_pos_mod_pairs[@]}"; do
-  mod="${dna_pos_mod_pairs[${pos}]}"
+for pos in "${!DNA_POS_MOD_PAIRS[@]}"; do
+  mod="${DNA_POS_MOD_PAIRS[${pos}]}"
   cmd+=" - modification --pos ${pos} --mod ${mod}"
 done
 
 # Add ligands (calcium ions) to the configuration with the specified CCD code and number
-cmd+=" - ligand add --ccd ${calcium_ion_ccd} --num 8"
+cmd+=" - ligand add --ccd ${CALCIUM_ION_CCD} --num 8"
 
 # Use the debug option to display the configuration details instead of generating the JSON output
 cmd+=" - debug --show"
 
+# Run the CLI command
 eval "${cmd}"
-# NOTE: All sequence positions (e.g., for modifications) use 1-based indexing

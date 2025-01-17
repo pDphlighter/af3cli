@@ -7,13 +7,13 @@
 # - Reference: https://www.rcsb.org/structure/4P5J
 
 # Define constants
-filename="example_FASTA_reader_cli.json"
-job_name="example_FASTA_reader_cli_job"
+FILENAME="example_FASTA_reader_cli.json"
+JOB_NAME="example_FASTA_reader_cli_job"
 
 # Absolute filepath to FASTA file
 filepath_fasta="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")/data/rcsb_pdb_4P5J.fasta"
 
-# Run the command to configure and add RNA data
-python -m af3cli config --filename "${filename}" --jobname "${job_name}" \
+# Run the CLI command
+python -m af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - rna add --fasta=True --sequence "${filepath_fasta}" \
   - debug --show  # Exclude this line to enable .json file creation
