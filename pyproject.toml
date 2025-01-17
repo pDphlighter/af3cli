@@ -13,7 +13,6 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "fire>=0.7.0",
-    "ipykernel>=6.29.5",
 ]
 
 [project.scripts]
@@ -30,6 +29,9 @@ dev = [
 features = [
     "biopython>=1.84",
     "rdkit>=2024.9.4",
+]
+examples = [
+    "ipykernel>=6.29.5",
 ]
 
 [tool.uv]

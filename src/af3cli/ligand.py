@@ -76,6 +76,10 @@ class Ligand(IDRecord, DictMixin):
         dict
             A dictionary containing the object's ID and ligand data.
         """
+        if isinstance(self.ligand_str, str) and \
+            self.ligand_type == LigandType.CCD:
+            # otherwise the CCD name string will be treated as list of chars
+            self.ligand_str = [self.ligand_str]
         content = dict()
         content["id"] = self.get_id()
         content[self.ligand_type.value] = self.ligand_str
