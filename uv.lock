@@ -7,12 +7,14 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fire" },
-    { name = "ipykernel" },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
+]
+examples = [
+    { name = "ipykernel" },
 ]
 features = [
     { name = "biopython" },
@@ -20,14 +22,11 @@ features = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "fire", specifier = ">=0.7.0" },
-    { name = "ipykernel", specifier = ">=6.29.5" },
-]
+requires-dist = [{ name = "fire", specifier = ">=0.7.0" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.3.4" }]
-fasta = []
+examples = [{ name = "ipykernel", specifier = ">=6.29.5" }]
 features = [
     { name = "biopython", specifier = ">=1.84" },
     { name = "rdkit", specifier = ">=2024.9.4" },
