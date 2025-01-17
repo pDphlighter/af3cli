@@ -6,7 +6,6 @@ name = "af3cli"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "biopython" },
     { name = "fire" },
     { name = "ipykernel" },
 ]
@@ -22,13 +21,13 @@ features = [
 
 [package.metadata]
 requires-dist = [
-    { name = "biopython", specifier = ">=1.84" },
     { name = "fire", specifier = ">=0.7.0" },
     { name = "ipykernel", specifier = ">=6.29.5" },
 ]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.3.4" }]
+fasta = []
 features = [
     { name = "biopython", specifier = ">=1.84" },
     { name = "rdkit", specifier = ">=2024.9.4" },

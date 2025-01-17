@@ -12,7 +12,6 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "biopython>=1.84",
     "fire>=0.7.0",
     "ipykernel>=6.29.5",
 ]
