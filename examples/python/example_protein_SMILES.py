@@ -11,7 +11,7 @@ import pprint
 from af3cli import InputBuilder, Sequence, SequenceType, Ligand, LigandType
 
 # Define constants
-FILENAME = "example_7CR2_python.py"
+FILENAME = "example_7CR2_python.json"
 JOB_NAME = "example_7CR2_py_job"
 INPUT_SEQUENCE_TYPE = SequenceType.PROTEIN
 INPUT_SEQUENCE_STR = (

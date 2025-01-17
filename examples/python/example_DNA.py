@@ -11,7 +11,7 @@ import pprint
 from af3cli import InputBuilder, Sequence, SequenceType, Ligand, LigandType
 
 # Define constants
-FILENAME = "example_208D_python.py"
+FILENAME = "example_208D_python.json"
 JOB_NAME = "example_208D_py_job"
 INPUT_SEQUENCE_TYPE = SequenceType.DNA
 INPUT_SEQUENCE_STR = "GCGAATTCG"
