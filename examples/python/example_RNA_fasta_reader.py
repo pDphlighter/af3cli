@@ -16,11 +16,16 @@ from af3cli.sequence import read_fasta
 FILENAME = "example_FASTA_reader_python.json"
 JOB_NAME = "example_FASTA_reader_py_job"
 INPUT_SEQUENCE_TYPE = SequenceType.RNA
-INPUT_FASTA_FILEPATH = str(Path(__file__).resolve().parent / "../data/rcsb_pdb_4P5J.fasta")
+INPUT_FASTA_FILEPATH = str(
+    Path(__file__).resolve().parent / "../data/rcsb_pdb_4P5J.fasta"
+)
 
 # Create RNA sequence object
 for _, fasta_sequence_string in read_fasta(INPUT_FASTA_FILEPATH):
-    sequence = Sequence(seq_type=INPUT_SEQUENCE_TYPE, seq_str=fasta_sequence_string)
+    sequence = Sequence(
+        seq_type=INPUT_SEQUENCE_TYPE,
+        seq_str=fasta_sequence_string
+    )
 
 # Build input configuration for the job
 input_builder = InputBuilder()

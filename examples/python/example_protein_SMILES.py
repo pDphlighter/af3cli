@@ -29,12 +29,21 @@ INPUT_SEQUENCE_NUM = 4  # homotetrameric channel protein
 
 LIGAND_TYPE = LigandType.SMILES
 LIGAND_SMILES = "CCOC(=O)NC1=C(C=C(C=C1)NCC2=CC=C(C=C2)F)N"
+LIGAND_NUM = 4
 
 # Create protein sequence object
-sequence = Sequence(seq_type=INPUT_SEQUENCE_TYPE, seq_str=INPUT_SEQUENCE_STR, num=INPUT_SEQUENCE_NUM)
+sequence = Sequence(
+    seq_type=INPUT_SEQUENCE_TYPE,
+    seq_str=INPUT_SEQUENCE_STR,
+    num=INPUT_SEQUENCE_NUM
+)
 
 # Create ligand object
-ligand = Ligand(ligand_type=LIGAND_TYPE, ligand_str=LIGAND_SMILES)
+ligand = Ligand(
+    ligand_type=LIGAND_TYPE,
+    ligand_str=LIGAND_SMILES,
+    num=LIGAND_NUM
+)
 
 # Build input configuration for the job
 input_builder = InputBuilder()

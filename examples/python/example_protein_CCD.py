@@ -26,10 +26,16 @@ LIGAND_TYPE = LigandType.CCD
 ZINC_ION_CCD ="ZN"
 
 # Create protein sequence object
-sequence = Sequence(seq_type=INPUT_SEQUENCE_TYPE, seq_str=INPUT_SEQUENCE_STR)
+sequence = Sequence(
+    seq_type=INPUT_SEQUENCE_TYPE,
+    seq_str=INPUT_SEQUENCE_STR
+)
 
 # Create ligand object
-ligand = Ligand(ligand_type=LIGAND_TYPE, ligand_str=ZINC_ION_CCD)
+ligand = Ligand(
+    ligand_type=LIGAND_TYPE,
+    ligand_str=ZINC_ION_CCD
+)
 
 # Build input configuration for the job
 input_builder = InputBuilder()

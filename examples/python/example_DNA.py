@@ -1,8 +1,6 @@
 """
 Example:
 simple dsDNA
-    - Protein Data Bank (PDB) Entry: 208D
-    - Reference: https://www.rcsb.org/structure/208D
 
 This script provides a Python implementation as an alternative to the af3cli input bash script.
 """
@@ -18,7 +16,11 @@ INPUT_SEQUENCE_STR = "GCGAATTCG"
 INPUT_SEQUENCE_NUM = 2
 
 # Create DNA sequence object
-sequence = Sequence(seq_type=INPUT_SEQUENCE_TYPE, seq_str=INPUT_SEQUENCE_STR, num=INPUT_SEQUENCE_NUM)
+sequence = Sequence(
+    seq_type=INPUT_SEQUENCE_TYPE,
+    seq_str=INPUT_SEQUENCE_STR,
+    num=INPUT_SEQUENCE_NUM
+)
 
 
 # Build input configuration for the job
