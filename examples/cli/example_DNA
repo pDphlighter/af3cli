@@ -7,8 +7,8 @@
 # - Reference: https://www.rcsb.org/structure/208D
 
 # Define constants
-filename="example_208D_cli.json"
-job_name="example_208D_cli_job"
+filename="example_DNA_cli.json"
+job_name="example_DNA_cli_job"
 
 # DNA sequence fetched from FASTA file
 dna_sequence="GCGAATTCG"

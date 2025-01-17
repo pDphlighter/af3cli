@@ -7,8 +7,8 @@
 # - Reference: https://www.rcsb.org/structure/7CR2
 
 # Define constants
-filename="example_7CR2_cli.json"
-job_name="example_7CR2_cli_job"
+filename="example_SMILES_cli.json"
+job_name="example_SMILES_cli_job"
 
 # Protein sequence fetched from FASTA file
 protein_sequence="\

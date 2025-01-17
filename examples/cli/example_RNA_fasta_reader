@@ -7,8 +7,8 @@
 # - Reference: https://www.rcsb.org/structure/4P5J
 
 # Define constants
-filename="example_4P5J_cli.json"
-job_name="example_4P5J_cli_job"
+filename="example_FASTA_reader_cli.json"
+job_name="example_FASTA_reader_cli_job"
 
 # Absolute filepath to FASTA file
 filepath_fasta="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")/data/rcsb_pdb_4P5J.fasta"

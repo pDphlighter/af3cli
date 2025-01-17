@@ -13,8 +13,8 @@ from af3cli import InputBuilder, Sequence, SequenceType
 from af3cli.sequence import read_fasta
 
 # Define constants
-FILENAME = "example_4P5J_python.json"
-JOB_NAME = "example_4P5J_py_job"
+FILENAME = "example_FASTA_reader_python.json"
+JOB_NAME = "example_FASTA_reader_py_job"
 INPUT_SEQUENCE_TYPE = SequenceType.RNA
 INPUT_FASTA_FILEPATH = str(Path(__file__).resolve().parent / "../data/rcsb_pdb_4P5J.fasta")
 
