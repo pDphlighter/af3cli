@@ -265,12 +265,14 @@ class Sequence(IDRecord, DictMixin):
         seq_type: SequenceType,
         seq_str: str,
         num: int | None = None,
+        seq_name: str | None = None,
         seq_id: list[str] | None = None,
         modifications: list[Modification] | None = None,
         templates: list[Template] | None = None,
         msa: MSA | None = None,
     ):
         super().__init__(None)
+        self._seq_name: str | None = seq_name
         self.seq_str: str = seq_str
         self.seq_type: SequenceType = seq_type
         self.msa: MSA | None = msa
@@ -299,6 +301,31 @@ class Sequence(IDRecord, DictMixin):
             elif len(seq_id) != num:
                 raise ValueError((f"Sequence ID length ({len(seq_id)}) does "
                                   f"not match sequence number ({num})."))
+            
+    @property
+    def name(self) -> str:
+        """
+        Returns the name of the sequence.
+
+        Returns
+        -------
+        str
+            The name of the sequence, if available; otherwise, an empty string.
+        """
+        return self._seq_name or ""
+
+    @name.setter
+    def name(self, name: str):
+        """
+        Sets the name of the sequence.
+
+        Parameters
+        ----------
+        value : str
+            The name to be assigned to the sequence.
+        """
+        self._seq_name = name
+        
 
     def _validate_modification_types(self):
         """
@@ -497,4 +524,4 @@ def fasta2seq(filename: str) -> Generator[Sequence | None, None, None]:
             yield None
             continue
 
-        yield Sequence(seq_type=seq_type, seq_str=entry_seq)
+        yield Sequence(seq_type=seq_type, seq_name=entry_name, seq_str=entry_seq)
