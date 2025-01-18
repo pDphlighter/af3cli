@@ -234,7 +234,7 @@ def _parse_templates(
             template_type=template_type,
             mmcif=template[template_type.value],
             qidx=template["queryIndices"],
-            tidx=template["targetIndices"]
+            tidx=template["templateIndices"]
         )
         templates.append(tmp_template)
     return templates
