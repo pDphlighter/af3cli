@@ -376,7 +376,7 @@ def read_json(filename: str, check: bool = True) -> InputFile:
         next_sequence = _parse_sequence(seq_type, seq_content)
         builder.add_sequence(next_sequence)
 
-    if "bondedAtomPairs" in data:
+    if "bondedAtomPairs" in data and data["bondedAtomPairs"] is not None:
         for pair in data["bondedAtomPairs"]:
             if len(pair) != 2:
                 raise AFMissingFieldError(
