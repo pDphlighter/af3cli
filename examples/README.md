@@ -9,7 +9,7 @@ The examples are organized into three main directories:
 3. `jupyter/` - Provides interactive examples using Jupyter notebooks.
 
 These directories contain examples illustrating the same core scenarios for consistency.
----
+
 ## Examples Overview
 1. **Bonds**
    - Assigning a covalent bonds to a residue in a protein sequence utilizing a Ligand molecule in CCD format.
