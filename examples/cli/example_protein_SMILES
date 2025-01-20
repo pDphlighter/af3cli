@@ -32,5 +32,5 @@ NUMBER_OF_LIGANDS=4
 # Run the CLI command
 af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - protein add --sequence "${PROTEIN_SEQUENCE}" --num ${NUMBER_OF_CHAINS} \
-  - ligand add --smiles "${RTG_SMILES}" --num ${NUMBER_OF_LIGANDS}\
+  - ligand add --smiles "${RTG_SMILES}" --num ${NUMBER_OF_LIGANDS} \
   - debug --show  # Exclude this line to enable .json file creation
