@@ -4,8 +4,8 @@
 # fictive sequences and modifications derived from Protein Data Bank (PDB) Entry: 8AW3
 
 # Define file and job name
-FILENAME="example_modifications_PTM.json"
-JOB_NAME="example_modifications_PTM_job"
+FILENAME="example_modifications_PTM_cli.json"
+JOB_NAME="example_modifications_PTM_cli_job"
 
 # Define the Protein Sequence
 PROTEIN_SEQUENCE="\
