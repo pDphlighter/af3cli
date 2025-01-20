@@ -48,7 +48,7 @@ CALCIUM_ION_CCD="CA"
 
 
 # Initialize the command by defining the configuration FILENAME and job name
-cmd="python -m af3cli config --filename \"${FILENAME}\" --jobname \"${JOB_NAME}\""
+cmd="af3cli config --filename \"${FILENAME}\" --jobname \"${JOB_NAME}\""
 
 # Add the protein sequence and apply modifications at specified positions
 cmd+=" - protein add --sequence \"${PROTEIN_SEQUENCE}\""

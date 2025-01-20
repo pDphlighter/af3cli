@@ -39,7 +39,7 @@ BOND_EXPRESSION="B:1:OG-C:1:C1"
 
 
 # Run the CLI command
-python -m af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
+af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - protein add --sequence "${PROTEIN_SEQUENCE_A}" -i ${PROTEIN_ID_A} \
   - protein add --sequence "${PROTEIN_SEQUENCE_B}" -i ${PROTEIN_ID_B} \
   - ligand add --ccd ${LIGAND_CCD} -i ${LIGAND_ID} \

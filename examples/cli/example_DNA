@@ -12,6 +12,6 @@ DNA_SEQUENCE="GCGAATTCG"
 NUMBER_OF_STRANDS=2
 
 # Run the CLI command
-python -m af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
+af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - dna add --sequence "${DNA_SEQUENCE}" --num ${NUMBER_OF_STRANDS} \
   - debug --show  # Exclude this line to enable .json file creation

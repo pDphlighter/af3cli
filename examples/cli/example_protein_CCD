@@ -24,7 +24,7 @@ RREHASIDAQS\
 ZINC_ION_CCD="ZN"
 
 # Run the CLI command
-python -m af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
+af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - protein add --sequence "${PROTEIN_SEQUENCE}" \
   - ligand add --ccd "${ZINC_ION_CCD}" \
   - debug --show  # Exclude this line to enable .json file creation
