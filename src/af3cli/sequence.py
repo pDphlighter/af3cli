@@ -265,12 +265,14 @@ class Sequence(IDRecord, DictMixin):
         seq_type: SequenceType,
         seq_str: str,
         num: int | None = None,
+        seq_name: str | None = None,
         seq_id: list[str] | None = None,
         modifications: list[Modification] | None = None,
         templates: list[Template] | None = None,
         msa: MSA | None = None,
     ):
         super().__init__(None)
+        self.seq_name: str | None = seq_name
         self.seq_str: str = seq_str
         self.seq_type: SequenceType = seq_type
         self.msa: MSA | None = msa
@@ -299,6 +301,7 @@ class Sequence(IDRecord, DictMixin):
             elif len(seq_id) != num:
                 raise ValueError((f"Sequence ID length ({len(seq_id)}) does "
                                   f"not match sequence number ({num})."))
+        
 
     def _validate_modification_types(self):
         """
@@ -497,4 +500,6 @@ def fasta2seq(filename: str) -> Generator[Sequence | None, None, None]:
             yield None
             continue
 
-        yield Sequence(seq_type=seq_type, seq_str=entry_seq)
+        yield Sequence(seq_type=seq_type, 
+                       seq_name=entry_name.replace(' ', '_').replace('|', '_').replace(':', '_').strip(),
+                       seq_str=entry_seq)

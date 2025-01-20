@@ -7,7 +7,8 @@ A command-line interface and Python library for generating AlphaFold3 input file
 readme = "README.md"
 authors = [
     { name = "Lukas Schulig", email = "schuligl@uni-greifswald.de" },
-    { name = "Philipp Döpner", email = "doepnerp@uni-greifswald.de" }
+    { name = "Philipp Döpner", email = "doepnerp@uni-greifswald.de" },
+    { name = "Mark Doerr", email = "mark.doerr@uni-greifswald.de" }
 ]
 requires-python = ">=3.11"
 dependencies = [
@@ -28,6 +29,9 @@ dev = [
 features = [
     "biopython>=1.84",
     "rdkit>=2024.9.4",
+]
+examples = [
+    "ipykernel>=6.29.5",
 ]
 
 [tool.uv]

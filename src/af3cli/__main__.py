@@ -775,7 +775,7 @@ class LigandCommand(CLICommand):
     def add(
         self,
         smiles: str | None = None,
-        ccd: str | None = None,
+        ccd: list[str] | str | None = None,
         sdf: str | None = None,
         num: int | None = None,
         ids: list[str] | None = None
@@ -796,7 +796,7 @@ class LigandCommand(CLICommand):
             SMILES representation of the ligand if provided. Must not be used
             simultaneously with `ccd` or `sdf`.
 
-        ccd : str
+        ccd : list[str] or str
             CCD identifier of the ligand if provided. Must not be used
             simultaneously with `smiles` or `sdf`.
 
@@ -857,7 +857,7 @@ class LigandCommand(CLICommand):
                 )
             return self
 
-        ligand_str = smiles or ccd
+        ligand_str = smiles or ensure_opt_str_list(ccd)
         ligand_type = LigandType.SMILES if smiles else LigandType.CCD
 
         # append the single ligand to a list to unify the finalization code

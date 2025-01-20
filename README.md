@@ -246,6 +246,7 @@ The ligands are treated in a generally similar way to the sequences and can be d
 ```shell
 af3cli [...] \
     - ligand add --smiles "CCC" \
+    # providing a list of CCD codes is also supported
     - ligand add --ccd "MG" \
     - ligand add --sdf ligands.sdf
 ```
