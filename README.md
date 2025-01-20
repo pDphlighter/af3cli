@@ -289,14 +289,14 @@ builder.set_user_ccd(filecontent)
 
 ### Bonds
 
-The bonded atom pairs are defined in the JSON file as a list of lists, each of which contains the residue number, the chain ID, and the atom name. To make it as easy as possible to add new bonds, a string format is used, which is then translated into the correct format.
+The bonded atom pairs are defined in the JSON file as a list of lists, each of which contains the Entity ID, the Residue ID and the atom name. To make it as easy as possible to add new bonds, a string format is used, which is then translated into the correct format.
 
 ```shell
-# R: residue number; C: chain ID, N: atom name
-af3cli [...] bond [--add] "R:C:N-R:C:N"
+# E: Entity ID; R: Residue ID N: atom name
+af3cli [...] bond [--add] "E:R:N-E:R:N"
 
 # example
-af3cli [...] bond [--add] "1:A:C-1:B:O"
+af3cli [...] bond [--add] "A:1:C-B:1:O"
 ```
 
 Although the sequences should be numbered in the order in which they were added, it is advisable to manually assign a sequence ID to the respective entities for the bonds (see below).
@@ -306,12 +306,22 @@ Python:
 ```python
 from af3cli import Bond
 
-bond = Bond.from_string("1:A:C-1:B:O")
+bond = Bond.from_string("A:1:C-B:1:O")
 
 builder.add_bonded_atom_pair(bond)
 ```
 
 You can also use the `Atom` class to initialize new atoms and create a `Bond` object from any two atoms.
+
+```python
+from af3cli import Bond, Atom
+
+atom_1 = Atom("A", 1, "C")
+atom_2 = Atom("B", 1, "O")
+bond = Bond(atom_1,atom_2)
+
+builder.add_bonded_atom_pair(bond)
+```
 
 ### Sequence ID Handling
 
