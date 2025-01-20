@@ -315,7 +315,7 @@ You can also use the `Atom` class to initialize new atoms and create a `Bond` ob
 ```python
 from af3cli import Bond, Atom
 
-atom_1 = Atom("A",1, "C")
+atom_1 = Atom("A", 1, "C")
 atom_2 = Atom("B", 1, "O")
 bond = Bond(atom_1,atom_2)
 
