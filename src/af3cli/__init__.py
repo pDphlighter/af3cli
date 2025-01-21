@@ -1,3 +1,5 @@
+__version__ = "0.2.0"
+
 from .ligand import Ligand, LigandType
 from .sequence import Sequence, SequenceType
 from .sequence import Template, TemplateType, MSA
