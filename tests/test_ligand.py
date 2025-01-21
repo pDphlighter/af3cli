@@ -12,8 +12,8 @@ def test_ligand_type(lig_type: LigandType, lig_type_value: str) -> None:
 
 
 @pytest.mark.parametrize("lig_type,lig_str,num,seq_id,actual_num",[
-    (LigandType.CCD, "NAC", None, None, 1),
-    (LigandType.CCD, "ATP", 2, ["A", "B"], 2),
+    (LigandType.CCD, ["NAC"], None, None, 1),
+    (LigandType.CCD, ["ATP"], 2, ["A", "B"], 2),
     (LigandType.SMILES, "CCC", None, None, 1),
     (LigandType.SMILES, "CCC", 1, None, 1),
     (LigandType.SMILES, "CCC", 2, None, 2),
@@ -35,7 +35,7 @@ def test_ligand_init(
 
 
 @pytest.mark.parametrize("lig_type,lig_str,seq_id",[
-    (LigandType.CCD, "ATP", ["A", "B"]),
+    (LigandType.CCD, ["ATP"], ["A", "B"]),
     (LigandType.SMILES, "CCC", ["A", "B"]),
     (LigandType.SMILES, "CCC", ["A", "B"])
 ])
