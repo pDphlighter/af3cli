@@ -1,7 +1,7 @@
 name: "Run Unit Tests"
 on:
   pull_request:
-    types: [ opened, reopened ]
+    types: [ opened, reopened, synchronize ]
 jobs:
   setup:
     runs-on: ubuntu-latest
