@@ -1,6 +1,6 @@
 import pytest
 
-from af3cli.ligand import Ligand, LigandType
+from af3cli.ligand import Ligand, LigandType, CCDLigand, SMILigand
 
 
 @pytest.mark.parametrize("lig_type,lig_type_value",[
@@ -29,7 +29,7 @@ def test_ligand_init(
 ) -> None:
     ligand = Ligand(lig_type, lig_str, num, seq_id)
     assert ligand.ligand_type == lig_type
-    assert ligand.ligand_str == lig_str
+    assert ligand.ligand_value == lig_str
     assert ligand.num == actual_num
     assert ligand.get_id() == seq_id
 
@@ -50,3 +50,27 @@ def test_ligand_to_dict(
     assert key == "ligand"
     assert values[lig_type.value] == lig_str
     assert values["id"] == seq_id
+
+
+@pytest.mark.parametrize("cls,lig_type,lig_str,num,seq_id,actual_num",[
+    (CCDLigand, LigandType.CCD, ["NAC"], None, None, 1),
+    (CCDLigand, LigandType.CCD, ["ATP"], 2, ["A", "B"], 2),
+    (SMILigand, LigandType.SMILES, "CCC", None, None, 1),
+    (SMILigand, LigandType.SMILES, "CCC", 1, None, 1),
+    (SMILigand, LigandType.SMILES, "CCC", 2, None, 2),
+    (SMILigand, LigandType.SMILES, "CCC", 2, ["A", "B"], 2),
+    (SMILigand, LigandType.SMILES, "CCC", None, ["A", "B"], 2)
+])
+def test_ligand_child_classes(
+        cls,
+        lig_type: LigandType,
+        lig_str: str,
+        num: int,
+        seq_id: list[str] | str | None,
+        actual_num: int
+) -> None:
+    ligand = cls(lig_str, num, seq_id)
+    assert ligand.ligand_type == lig_type
+    assert ligand.ligand_value == lig_str
+    assert ligand.num == actual_num
+    assert ligand.get_id() == seq_id
