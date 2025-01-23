@@ -251,10 +251,10 @@ af3cli [...] \
     - ligand add --sdf ligands.sdf
 ```
 
-Python:
+In Python, either the parent class `Ligand` together with the respective `LigandType` or alternatively the corresponding child classes `CCDLigand` or `SMILigand` can be used to add new ligands.
 
 ```python
-from af3cli import Ligand, LigandType
+from af3cli import Ligand, LigandType, SMILigand
 from af3cli.ligand import sdf2smiles
 
 ligand = Ligand(
@@ -262,6 +262,9 @@ ligand = Ligand(
     "CCC",
     #[...]
 )
+
+# using SMILigand
+# ligand = SMILigand("CCC")
 
 builder.add_ligand(ligand)
 
@@ -271,6 +274,7 @@ for smi in sdf2smiles("ligands.sdf"):
         Ligand(LigandType.SMILES, smi)
     )
 ```
+
 ### Custom CCD
 
 Please refer to the [AlphaFold3 input documentation](https://github.com/google-deepmind/alphafold3/blob/main/docs/input.md#user-provided-ccd-format) on how to generate valid CCD mmCIF files.
@@ -350,8 +354,7 @@ You can also specify IDs or a number in connection with an SDF file, whereby it 
 In Python, the number or explicit IDs can be specified when initializing `Ligand` or `Sequence` objects. If both parameters are specified, their count must match. The registration or automatic assignment of IDs only takes place in connection with an `InputFile` object and is carried out when the file is converted into a dictionary (e.g. when the file is written).
 
 ```python
-ligand = Ligand(
-    LigandType.SMILES,
+ligand = SMILigand(
     "CCC",
     seq_id=["A", "B"],
     num=2
