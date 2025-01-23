@@ -6,7 +6,7 @@ This script provides a Python implementation as an alternative to the af3cli inp
 """
 
 import pprint
-from af3cli import InputBuilder, Sequence, SequenceType, Ligand, LigandType
+from af3cli import InputBuilder, Sequence, SequenceType, CCDLigand
 from af3cli.sequence import ResidueModification, NucleotideModification
 
 # Define File and Job Name
@@ -53,8 +53,7 @@ DNA_MODIFICATIONS = [
 ]
 
 # Define Ligand Data
-LIGAND_TYPE = LigandType.CCD
-ZINC_ION_CCD ="CA"
+ZINC_ION_CCD = ["CA"]
 LIGAND_NUM = 8
 
 # Create Protein Sequence Object
@@ -76,10 +75,10 @@ dna_sequence = Sequence(
     modifications=DNA_MODIFICATIONS)
 
 # Create Ligand Object
-ligand = Ligand(
-    ligand_type=LIGAND_TYPE,
-    ligand_str=ZINC_ION_CCD,
-    num=LIGAND_NUM)
+ligand = CCDLigand(
+    ligand_value=ZINC_ION_CCD,
+    num=LIGAND_NUM
+)
 
 # Build Input Configuration for the Job
 input_builder = InputBuilder()

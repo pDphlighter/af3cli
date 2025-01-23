@@ -8,7 +8,7 @@ This script provides a Python implementation as an alternative to the af3cli inp
 """
 
 import pprint
-from af3cli import InputBuilder, Sequence, SequenceType, Ligand, LigandType
+from af3cli import InputBuilder, Sequence, SequenceType, SMILigand
 
 # Define constants
 FILENAME = "example_SMILES_python.json"
@@ -27,7 +27,6 @@ INPUT_SEQUENCE_STR = (
 )
 INPUT_SEQUENCE_NUM = 4  # homotetrameric channel protein
 
-LIGAND_TYPE = LigandType.SMILES
 LIGAND_SMILES = "CCOC(=O)NC1=C(C=C(C=C1)NCC2=CC=C(C=C2)F)N"
 LIGAND_NUM = 4
 
@@ -39,9 +38,8 @@ sequence = Sequence(
 )
 
 # Create ligand object
-ligand = Ligand(
-    ligand_type=LIGAND_TYPE,
-    ligand_str=LIGAND_SMILES,
+ligand = SMILigand(
+    ligand_value=LIGAND_SMILES,
     num=LIGAND_NUM
 )
 

@@ -8,12 +8,11 @@ This script provides a Python implementation as an alternative to the af3cli inp
 """
 
 import pprint
-from af3cli import InputBuilder, Sequence, SequenceType, Ligand, LigandType, Bond
+from af3cli import InputBuilder, Sequence, SequenceType, CCDLigand, Bond
 
 # Define filename and job name
 FILENAME = "example_bonds_python.json"
 JOB_NAME = "example_bonds_py_job"
-
 
 # Protein sequence for PvdQ subunit alpha
 PROTEIN_SEQUENCE_A = (
@@ -40,8 +39,7 @@ PROTEIN_ID_B = "G"
 INPUT_SEQUENCE_TYPE = SequenceType.PROTEIN
 
 # Myristic acid, CCD format
-LIGAND_TYPE = LigandType.CCD
-LIGAND_CCD = "MYR"
+LIGAND_CCD = ["MYR"]
 LIGAND_ID = "M"
 
 # Bond expression
@@ -60,9 +58,8 @@ sequence_b = Sequence(
 )
 
 # Create ligand object
-ligand = Ligand(
-    ligand_type=LIGAND_TYPE,
-    ligand_str=LIGAND_CCD,
+ligand = CCDLigand(
+    ligand_value=LIGAND_CCD,
     seq_id=LIGAND_ID
 )
 

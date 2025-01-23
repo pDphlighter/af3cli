@@ -20,17 +20,18 @@ INPUT_FASTA_FILEPATH = str(
     Path(__file__).resolve().parent / "../data/rcsb_pdb_4P5J.fasta"
 )
 
+# Build input configuration for the job
+input_builder = InputBuilder()
+input_builder.set_name(JOB_NAME)
+
 # Create RNA sequence object
 for _, fasta_sequence_string in read_fasta(INPUT_FASTA_FILEPATH):
     sequence = Sequence(
         seq_type=INPUT_SEQUENCE_TYPE,
         seq_str=fasta_sequence_string
     )
+    input_builder.add_sequence(sequence)
 
-# Build input configuration for the job
-input_builder = InputBuilder()
-input_builder.set_name(JOB_NAME)
-input_builder.add_sequence(sequence)
 internal_input = input_builder.build()
 
 # Uncomment following line to generate output as JSON file

@@ -22,7 +22,6 @@ sequence = Sequence(
     num=INPUT_SEQUENCE_NUM
 )
 
-
 # Build input configuration for the job
 input_builder = InputBuilder()
 input_builder.set_name(JOB_NAME)
