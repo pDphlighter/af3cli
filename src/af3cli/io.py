@@ -4,7 +4,7 @@ from .input import InputFile
 from .bond import Atom, Bond
 from .exception import AFMissingFieldError, AFTemplateError, AFMSAError
 from .builder import InputBuilder
-from .ligand import Ligand, LigandType
+from .ligand import Ligand, SMILigand, CCDLigand
 from .sequence import (Sequence,
                        ResidueModification,
                        NucleotideModification,
@@ -131,15 +131,13 @@ def _parse_ligand(seq_content: dict) -> Ligand:
     seq_id = _get_id(seq_content)
 
     if "ccdCodes" in seq_content.keys():
-        return Ligand(
-            ligand_type=LigandType.CCD,
-            ligand_str=seq_content["ccdCodes"],
+        return CCDLigand(
+            ligand_value=seq_content["ccdCodes"],
             seq_id=seq_id
         )
     elif "smiles" in seq_content.keys():
-        return Ligand(
-            ligand_type=LigandType.SMILES,
-            ligand_str=seq_content["smiles"],
+        return SMILigand(
+            ligand_value=seq_content["smiles"],
             seq_id=seq_id
         )
     else:
