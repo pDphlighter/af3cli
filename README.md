@@ -9,7 +9,7 @@ We recommend using [uv](https://github.com/astral-sh/uv) to manage your installa
 uv sync --locked
 ```
 
-This automatically creates a virtual environment `.venv` in the project folder and installs all dependencies. If you do not need the optional dependencies for reading SDF (RDKit) or FASTA files (Biopython), the installation can be prevented with `--no-group features`.
+This automatically creates a virtual environment `.venv` in the project folder and installs all dependencies. If you do not need the optional dependencies for reading SDF ([RDKit](https://github.com/rdkit/rdkit)) or FASTA files ([Biopython](https://github.com/biopython/biopython)), the installation can be prevented with `--no-group features`.
 
 ## Basic Usage
 
@@ -129,7 +129,7 @@ builder.add_sequence(dna_seq)
 builder.add_sequence(rc_dna_seq)
 ```
 
-If modifications or manually defined IDs are required, the complementary sequence must be added separately.
+If modifications or manually defined IDs are required, the complementary sequence must be created separately.
 
 #### FASTA Files
 
