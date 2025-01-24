@@ -35,9 +35,6 @@ class Ligand(IDRecord, DictMixin):
         The string representation(s) of the ligand.
     _ligand_value : LigandType
         The type of the ligand entry.
-    _num : int or None
-        The number of ligand sequences, default is 1. If `seq_id` is provided and
-        `num` is not, then `num` will be inferred from the length of `seq_id`.
     _seq_id : list[str] or None
         The sequence ID(s) associated with the sequence. These can be
         either specified as a list of strings or will be automatically
@@ -47,26 +44,19 @@ class Ligand(IDRecord, DictMixin):
         self,
         ligand_type: LigandType,
         ligand_value: list[str] | str,
-        num: int | None = None,
+        num: int = 1,
         seq_id: list[str] | None = None
     ):
-        super().__init__(None)
+        super().__init__(num, None)
         self._ligand_value: list[str] | str  = ligand_value
         self._ligand_type: LigandType = ligand_type
 
         # can be overwritten if seq_id is specified
-        if num is None:
-            self._num: int = 1
-        else:
-            self._num: int = num
+        self._num: int = num
 
         if seq_id is not None:
             self._seq_id: list[str] = seq_id
-            if num is None:
-                self._num: int = len(seq_id)
-            elif len(seq_id) != num:
-                raise ValueError((f"Sequence ID length ({len(seq_id)}) does "
-                                  f"not match sequence number ({num})."))
+            self._num: int = len(seq_id)
 
     @property
     def ligand_type(self) -> LigandType:
@@ -75,10 +65,6 @@ class Ligand(IDRecord, DictMixin):
     @property
     def ligand_value(self) -> list[str] | str:
         return self._ligand_value
-
-    @property
-    def num(self) -> int:
-        return self._num
 
     def to_dict(self):
         """

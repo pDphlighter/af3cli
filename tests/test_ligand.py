@@ -12,17 +12,17 @@ def test_ligand_type(lig_type: LigandType, lig_type_value: str) -> None:
 
 
 @pytest.mark.parametrize("lig_type,lig_str,num,seq_id,actual_num",[
-    (LigandType.CCD, ["NAC"], None, None, 1),
+    (LigandType.CCD, ["NAC"], 1, None, 1),
     (LigandType.CCD, ["ATP"], 2, ["A", "B"], 2),
-    (LigandType.SMILES, "CCC", None, None, 1),
+    (LigandType.SMILES, "CCC", 1, None, 1),
     (LigandType.SMILES, "CCC", 1, None, 1),
     (LigandType.SMILES, "CCC", 2, None, 2),
     (LigandType.SMILES, "CCC", 2, ["A", "B"], 2),
-    (LigandType.SMILES, "CCC", None, ["A", "B"], 2)
+    (LigandType.SMILES, "CCC", 1, ["A", "B"], 2)
 ])
 def test_ligand_init(
         lig_type: LigandType,
-        lig_str: str,
+        lig_str: list[str] | str,
         num: int,
         seq_id: list[str] | str | None,
         actual_num: int
@@ -53,13 +53,13 @@ def test_ligand_to_dict(
 
 
 @pytest.mark.parametrize("cls,lig_type,lig_str,num,seq_id,actual_num",[
-    (CCDLigand, LigandType.CCD, ["NAC"], None, None, 1),
+    (CCDLigand, LigandType.CCD, ["NAC"], 1, None, 1),
     (CCDLigand, LigandType.CCD, ["ATP"], 2, ["A", "B"], 2),
-    (SMILigand, LigandType.SMILES, "CCC", None, None, 1),
+    (SMILigand, LigandType.SMILES, "CCC", 1, None, 1),
     (SMILigand, LigandType.SMILES, "CCC", 1, None, 1),
     (SMILigand, LigandType.SMILES, "CCC", 2, None, 2),
     (SMILigand, LigandType.SMILES, "CCC", 2, ["A", "B"], 2),
-    (SMILigand, LigandType.SMILES, "CCC", None, ["A", "B"], 2)
+    (SMILigand, LigandType.SMILES, "CCC", 1, ["A", "B"], 2)
 ])
 def test_ligand_child_classes(
         cls,
