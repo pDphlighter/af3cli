@@ -1,3 +1,5 @@
+from abc import ABCMeta
+
 from enum import StrEnum
 from typing import Generator
 
@@ -24,18 +26,15 @@ class Ligand(IDRecord, DictMixin):
     """
     Represents a ligand with associated type, sequence ID, and other attributes.
 
-    The Ligand class is used to represent a specific ligand with its type,
-    string representation, sequence ID, and count.
+    The Ligand class is used as a base class to represent a specific
+    ligand with its type, string representation, sequence ID, and count.
 
     Attributes
     ----------
-    ligand_str : list of str or str
+    _ligand_value : list of str or str
         The string representation(s) of the ligand.
-    ligand_type : LigandType
+    _ligand_value : LigandType
         The type of the ligand entry.
-    num : int or None
-        The number of ligand sequences, default is 1. If `seq_id` is provided and
-        `num` is not, then `num` will be inferred from the length of `seq_id`.
     _seq_id : list[str] or None
         The sequence ID(s) associated with the sequence. These can be
         either specified as a list of strings or will be automatically
@@ -44,27 +43,28 @@ class Ligand(IDRecord, DictMixin):
     def __init__(
         self,
         ligand_type: LigandType,
-        ligand_str: list[str] | str,
-        num: int | None = None,
+        ligand_value: list[str] | str,
+        num: int = 1,
         seq_id: list[str] | None = None
     ):
-        super().__init__(None)
-        self.ligand_str: list[str] | str  = ligand_str
-        self.ligand_type: LigandType = ligand_type
+        super().__init__(num, None)
+        self._ligand_value: list[str] | str  = ligand_value
+        self._ligand_type: LigandType = ligand_type
 
         # can be overwritten if seq_id is specified
-        if num is None:
-            self.num: int = 1
-        else:
-            self.num: int = num
+        self._num: int = num
 
         if seq_id is not None:
             self._seq_id: list[str] = seq_id
-            if num is None:
-                self.num: int = len(seq_id)
-            elif len(seq_id) != num:
-                raise ValueError((f"Sequence ID length ({len(seq_id)}) does "
-                                  f"not match sequence number ({num})."))
+            self._num: int = len(seq_id)
+
+    @property
+    def ligand_type(self) -> LigandType:
+        return self._ligand_type
+
+    @property
+    def ligand_value(self) -> list[str] | str:
+        return self._ligand_value
 
     def to_dict(self):
         """
@@ -76,20 +76,46 @@ class Ligand(IDRecord, DictMixin):
         dict
             A dictionary containing the object's ID and ligand data.
         """
-        if isinstance(self.ligand_str, str) and \
-            self.ligand_type == LigandType.CCD:
+        if isinstance(self._ligand_value, str) and \
+            self._ligand_type == LigandType.CCD:
             # otherwise the CCD name string will be treated as list of chars
-            self.ligand_str = [self.ligand_str]
+            self._ligand_value = [self._ligand_value]
         content = dict()
         content["id"] = self.get_id()
-        content[self.ligand_type.value] = self.ligand_str
+        content[self._ligand_type.value] = self._ligand_value
         return {"ligand": content}
 
     def __str__(self) -> str:
-        return f"Ligand({self.ligand_type.name})"
+        return f"Ligand({self._ligand_type.name})"
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"
+
+
+class CCDLigand(Ligand):
+    """
+    Represents a CCD (Chemical Component Dictionary) ligand.
+    """
+    def __init__(
+        self,
+        ligand_value: list[str],
+        num: int | None = None,
+        seq_id: list[str] | None = None
+    ):
+        super().__init__(LigandType.CCD, ligand_value, num, seq_id)
+
+
+class SMILigand(Ligand):
+    """
+    Represents a ligand that uses SMILES notation to define the chemical structure.
+    """
+    def __init__(
+        self,
+        ligand_value: list[str] | str,
+        num: int | None = None,
+        seq_id: list[str] | None = None
+    ):
+        super().__init__(LigandType.SMILES, ligand_value, num, seq_id)
 
 
 def sdf2smiles(filename: str) -> Generator[str | None, None, None]:

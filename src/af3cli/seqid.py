@@ -44,28 +44,34 @@ class IDRecord(object):
     Manages a sequence ID record to automatically handle sequence IDs
     in the AlphaFold3 input file.
 
-    Parameters
-    ----------
-    seq_id : list of str
-        A list of sequence IDs to initialize the record with. Defaults to None.
-
     Attributes
     ----------
     _seq_id : list of str or None
         The stored sequence IDs.
+    _num : int or None
+        The number of ligand sequences, default is 1.T his value
+        will be overwritten if `seq_id` is specified.
     is_registered : bool
         A flag indicating whether the record is already registered or not.
-
     """
-    def __init__(self, seq_id: list[str] | None = None):
+    def __init__(self, num: int = 1, seq_id: list[str] | None = None):
         self._seq_id: list[str] | None= seq_id
+        if self._seq_id is None:
+            self._num = num
+        else:
+            self._num = len(seq_id)
         self.is_registered: bool = False
+
+    @property
+    def num(self) -> int:
+        return self._num
 
     def get_id(self) -> list[str]:
         return self._seq_id
 
     def set_id(self, seq_id: list[str]) -> None:
         self._seq_id = seq_id
+        self._num = len(seq_id)
 
     def remove_id(self) -> None:
         self._seq_id = None
