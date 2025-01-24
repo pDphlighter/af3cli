@@ -373,3 +373,9 @@ def test_sequence_shortcuts(cls, seq_str: str, seq_type: SequenceType):
     assert seq.num == 1
     if isinstance(seq, ProteinSequence):
         assert len(seq.templates) == 0
+
+
+def test_dna_complement():
+    seq = DNASequence("GCGAATTCG")
+    complement = seq.reverse_complement()
+    assert complement.sequence == "CGAATTCGC"

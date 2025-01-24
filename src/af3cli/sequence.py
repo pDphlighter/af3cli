@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import StrEnum
 from abc import ABCMeta
 from typing import Generator
@@ -445,6 +447,29 @@ class DNASequence(Sequence):
             num=num,
             seq_id=seq_id,
             modifications=modifications,
+        )
+
+    def reverse_complement(self) -> DNASequence:
+        """
+            Generates the reverse complement of the DNA sequence.
+
+            Returns
+            -------
+            DNASequence
+                A new DNASequence instance representing the reverse complement
+                of this sequence with the same sequence name and number of
+                entities.
+        """
+        cmap = {
+            'A': 'T',
+            'T': 'A',
+            'C': 'G',
+            'G': 'C'
+        }
+        complement = ''.join(cmap[base] for base in self._seq_str)
+        complement = complement[::-1]
+        return DNASequence(
+            complement, num=self._num, seq_name=self.seq_name,
         )
 
 
