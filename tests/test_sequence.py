@@ -2,7 +2,9 @@ import pytest
 
 import io
 
-from af3cli.sequence import SequenceType, Sequence
+from af3cli.sequence import (SequenceType, Sequence,
+                             ProteinSequence,
+                             DNASequence, RNASequence)
 from af3cli.sequence import TemplateType, Template
 from af3cli.sequence import (Modification, ResidueModification,
                              NucleotideModification)
@@ -156,14 +158,14 @@ def test_sequence_init_mod(
         seq_mods: list[Modification]
 ) -> None:
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, modifications=seq_mods)
-    assert seq.seq_type == seq_type
-    assert seq.seq_str == seq_str
+    assert seq._seq_type == seq_type
+    assert seq._seq_str == seq_str
     assert seq.get_id() == seq_id
-    assert seq.modifications == seq_mods
+    assert seq._modifications == seq_mods
     if seq_id is not None:
-        assert seq.num == len(seq_id)
+        assert seq._num == len(seq_id)
     else:
-        assert seq.num == 1
+        assert seq._num == 1
 
 
 @pytest.mark.parametrize("seq_type,seq_str,seq_id,templates",[
@@ -182,10 +184,10 @@ def test_sequence_init_template(
         templates: list[Template] | None
 ) -> None:
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, templates=templates)
-    assert seq.seq_type == seq_type
-    assert seq.seq_str == seq_str
+    assert seq.sequence_type == seq_type
+    assert seq.sequence == seq_str
     assert seq.get_id() == seq_id
-    assert len(seq.templates) == len(templates)
+    assert len(seq._templates) == len(templates)
 
 
 @pytest.mark.parametrize("paired,unpaired,pispath,unpispath", [
@@ -270,12 +272,12 @@ def test_sequence_init_msa(
         msa: MSA | None
 ) -> None:
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, msa=msa)
-    assert seq.seq_type == seq_type
-    assert seq.seq_str == seq_str
+    assert seq.sequence_type == seq_type
+    assert seq.sequence == seq_str
     assert seq.get_id() == seq_id
     tmp_dict = seq.to_dict()[seq_type.value]
     if msa is None:
-        assert seq.msa is None
+        assert seq._msa is None
         assert "pairedMsa" not in tmp_dict.keys()
         assert "unpairedMsa" not in tmp_dict.keys()
         return
@@ -338,19 +340,36 @@ def test_fasta2seq_single(single_fasta_file):
     for entry in fasta2seq(single_fasta_file):
         assert entry is not None
         assert isinstance(entry, Sequence)
-        assert entry.seq_type == SequenceType.PROTEIN
-        assert entry.seq_str == "MSRRKQGNPQHLSQRELITPEADH"
+        assert entry.sequence_type == SequenceType.PROTEIN
+        assert entry.sequence == "MSRRKQGNPQHLSQRELITPEADH"
 
 
 def test_fasta2seq_multi(multi_protein_fasta_file):
     for entry in fasta2seq(multi_protein_fasta_file):
         assert entry is not None
         assert isinstance(entry, Sequence)
-        assert entry.seq_type == SequenceType.PROTEIN
+        assert entry.sequence_type == SequenceType.PROTEIN
 
 
 def test_fasta2seq_multi_all(multi_all_fasta_file):
     for entry in fasta2seq(multi_all_fasta_file):
         assert entry is not None
         assert isinstance(entry, Sequence)
-        assert entry.seq_type is not None
+        assert entry.sequence_type is not None
+
+
+@pytest.mark.parametrize("cls,seq_str,seq_type", [
+    (ProteinSequence, "MVKVGVNGF", SequenceType.PROTEIN),
+    (DNASequence, "AUGUGUAU", SequenceType.DNA),
+    (RNASequence, "GACCTCT", SequenceType.RNA)
+])
+def test_sequence_shortcuts(cls, seq_str: str, seq_type: SequenceType):
+    seq = cls(seq_str)
+    assert seq.sequence_type == seq_type
+    assert seq.sequence == seq_str
+    assert seq.get_id() is None
+    assert len(seq.modifications) == 0
+    assert seq.msa is None
+    assert seq.num == 1
+    if isinstance(seq, ProteinSequence):
+        assert len(seq.templates) == 0

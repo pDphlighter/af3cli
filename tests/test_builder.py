@@ -80,8 +80,9 @@ def test_builder_add_sequence(
 ) -> None:
     builder.add_sequence(sample_sequence)
     input_file = builder.build()
-    assert input_file.sequences[0].seq_str == sample_sequence.seq_str
-    assert input_file.sequences[0].seq_type == sample_sequence.seq_type
+    input_seq = input_file.sequences[0]
+    assert input_seq.sequence == sample_sequence.sequence
+    assert input_seq.sequence_type == sample_sequence.sequence_type
 
 
 def test_builder_add_ligand(
