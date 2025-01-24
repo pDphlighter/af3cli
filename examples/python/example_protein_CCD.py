@@ -9,12 +9,12 @@ This script provides a Python implementation as an alternative to the af3cli inp
 """
 
 import pprint
-from af3cli import InputBuilder, Sequence, SequenceType, CCDLigand
+from af3cli import InputBuilder, ProteinSequence, CCDLigand
 
 # Define constants
 FILENAME = "example_protein_ccd_python.json"
 JOB_NAME = "example_protein_ccd_py_job"
-INPUT_SEQUENCE_TYPE = SequenceType.PROTEIN
+
 INPUT_SEQUENCE_STR = (
     "GEADMDFLRNLFSQTLSLGSQKERLLDELTLEGVARYMQSERCRRVICLVGAGISTSAGIPDFRSPSTGLYDN"
     "LEKYHLPYPEAIFEISYFKKHPEPFFALAKELYPGQFKPTICHYFMRLLKDKGLLLRCYTQNIDTLERIAGLE"
@@ -26,15 +26,10 @@ INPUT_SEQUENCE_STR = (
 ZINC_ION_CCD =["ZN"]
 
 # Create protein sequence object
-sequence = Sequence(
-    seq_type=INPUT_SEQUENCE_TYPE,
-    seq_str=INPUT_SEQUENCE_STR
-)
+sequence = ProteinSequence(INPUT_SEQUENCE_STR)
 
 # Create ligand object
-ligand = CCDLigand(
-    ligand_value=ZINC_ION_CCD
-)
+ligand = CCDLigand(ZINC_ION_CCD)
 
 # Build input configuration for the job
 input_builder = InputBuilder()

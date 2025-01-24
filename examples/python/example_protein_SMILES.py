@@ -8,12 +8,12 @@ This script provides a Python implementation as an alternative to the af3cli inp
 """
 
 import pprint
-from af3cli import InputBuilder, Sequence, SequenceType, SMILigand
+from af3cli import InputBuilder, ProteinSequence, SMILigand
 
 # Define constants
 FILENAME = "example_SMILES_python.json"
 JOB_NAME = "example_SMILES_py_job"
-INPUT_SEQUENCE_TYPE = SequenceType.PROTEIN
+
 INPUT_SEQUENCE_STR = (
     "MAGKPPKRNAFYRKLQNFLYNVLERPRGWAFIYHAYVFLLVFSCLVLSVFSTIKEYEKSSEGALYILEIVTIV"
     "VFGVEYFVRIWAAGCCCRYRGWRGRLKFARKPFCVIDIMVLIASIAVLAAGSQGNVFATSALRSLRFLQILRM"
@@ -31,8 +31,7 @@ LIGAND_SMILES = "CCOC(=O)NC1=C(C=C(C=C1)NCC2=CC=C(C=C2)F)N"
 LIGAND_NUM = 4
 
 # Create protein sequence object
-sequence = Sequence(
-    seq_type=INPUT_SEQUENCE_TYPE,
+sequence = ProteinSequence(
     seq_str=INPUT_SEQUENCE_STR,
     num=INPUT_SEQUENCE_NUM
 )

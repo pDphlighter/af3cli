@@ -8,7 +8,7 @@ This script provides a Python implementation as an alternative to the af3cli inp
 """
 
 import pprint
-from af3cli import InputBuilder, Sequence, SequenceType, CCDLigand, Bond
+from af3cli import InputBuilder, CCDLigand, Bond, ProteinSequence
 
 # Define filename and job name
 FILENAME = "example_bonds_python.json"
@@ -20,7 +20,7 @@ PROTEIN_SEQUENCE_A = (
     "FYAWLNQPEALQAFWQAQTPAVRQLLEGYAAGFNRFLREADGKTTSCLGQPWLRAIATDDLLRLTRRLLVEGG"
     "VGQFADALVAAAPPGAE"
 )
-PROTEIN_ID_A = "E"
+PROTEIN_ID_A = ["E"]
 
 # Protein sequence for PvdQ subunit beta
 PROTEIN_SEQUENCE_B = (
@@ -33,26 +33,21 @@ PROTEIN_SEQUENCE_B = (
     "LQVSTRGQERIAIPGGDGHFGVYNAIQSVRKGDHLEVVGGTSYIQLVTFPEEGPKARGLLAFSQSSDPRSPHY"
     "RDQTELFSRQQWQTLPFSDRQIDADPQLQRLSIRE"
 )
-PROTEIN_ID_B = "G"
-
-# Sequence type definition
-INPUT_SEQUENCE_TYPE = SequenceType.PROTEIN
+PROTEIN_ID_B = ["G"]
 
 # Myristic acid, CCD format
 LIGAND_CCD = ["MYR"]
-LIGAND_ID = "M"
+LIGAND_ID = ["M"]
 
 # Bond expression
 BOND_EXPRESSION = f"{PROTEIN_ID_B}:1:OG-{LIGAND_ID}:1:C1"
 
 # Create protein sequence object
-sequence_a = Sequence(
-    seq_type=INPUT_SEQUENCE_TYPE,
+sequence_a = ProteinSequence(
     seq_str=PROTEIN_SEQUENCE_A,
     seq_id=PROTEIN_ID_A
 )
-sequence_b = Sequence(
-    seq_type=INPUT_SEQUENCE_TYPE,
+sequence_b = ProteinSequence(
     seq_str=PROTEIN_SEQUENCE_B,
     seq_id=PROTEIN_ID_B
 )
