@@ -108,12 +108,12 @@ class InputFile(DictMixin):
         self._id_register.reset()
 
     def merge(
-            self,
-            other: InputFile,
-            reset: bool = True,
-            seeds: bool = False,
-            bonded_atoms: bool = False,
-            userccd: bool = False
+        self,
+        other: InputFile,
+        reset: bool = True,
+        seeds: bool = False,
+        bonded_atoms: bool = False,
+        userccd: bool = False
     ) -> None:
         """
         Merges the content of another InputFile instance into the current

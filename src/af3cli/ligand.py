@@ -1,5 +1,3 @@
-from abc import ABCMeta
-
 from enum import StrEnum
 from typing import Generator
 
