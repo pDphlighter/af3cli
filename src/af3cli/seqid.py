@@ -56,17 +56,47 @@ class IDRecord(object):
     """
     def __init__(self, num: int = 1, seq_id: list[str] | None = None):
         self._seq_id: list[str] | None = seq_id
-        if self._seq_id is None:
-            self._num: int = num
-        else:
-            self._num: int = len(self._seq_id)
+        self._num: int = num
         self._is_registered: bool = False
+        self._sanitize_seq_id(seq_id)
+        self._sanitize_num(num)
 
-    def _update_num(self) -> None:
+    def _sanitize_seq_id(self, seq_id: list[str] | None) -> None:
+        """
+        Sanitizes the sequence identifier.
+
+        This method processes the provided sequence identifier `seq_id`. If `seq_id`
+        is None or contains no elements, the internal `_seq_id` attribute is set
+        to None. Otherwise, `_seq_id` is updated with the given `seq_id`.
+
+        Parameters
+        ----------
+        seq_id : list of str or None
+            A list of sequence identifiers. If None or an empty list is
+            provided, the internal `_seq_id` attribute is set to None; otherwise,
+            it is assigned the provided list.
+        """
+        if seq_id is None or len(seq_id) == 0:
+            self._seq_id = None
+        else:
+            self._seq_id =  seq_id
+
+    def _sanitize_num(self, num: int = 1) -> None:
+        """
+        Sanitizes and updates the `_num` attribute based on given input or the
+        length of `_seq_id`.
+
+        Parameters
+        ----------
+        num : int, optional
+            An integer value indicating the desired number. Defaults to 1.
+        """
         if self._seq_id is None:
-            self._num = 1
+            self._num = num
         else:
             self._num = len(self._seq_id)
+        if num < 1:
+            self._num = 1
 
     @property
     def num(self) -> int:
@@ -99,10 +129,9 @@ class IDRecord(object):
         - This function sets the registered flag to False. Please reset the corresponding
           `IDRegister` if the object is already attached to `InputFile` to prevent ID clashes.
         """
-        if isinstance(seq_id, list) and len(seq_id) == 0:
-            self._seq_id = None
         self._seq_id = seq_id
-        self._update_num()
+        self._sanitize_seq_id(seq_id)
+        self._sanitize_num()
         self._is_registered = False
 
     def remove_id(self) -> None:
