@@ -99,7 +99,7 @@ class CCDLigand(Ligand):
     def __init__(
         self,
         ligand_value: list[str],
-        num: int | None = None,
+        num: int = 1,
         seq_id: list[str] | None = None
     ):
         super().__init__(LigandType.CCD, ligand_value, num, seq_id)
@@ -112,7 +112,7 @@ class SMILigand(Ligand):
     def __init__(
         self,
         ligand_value: list[str] | str,
-        num: int | None = None,
+        num: int = 1,
         seq_id: list[str] | None = None
     ):
         super().__init__(LigandType.SMILES, ligand_value, num, seq_id)
