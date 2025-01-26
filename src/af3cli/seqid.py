@@ -51,31 +51,62 @@ class IDRecord(object):
     _num : int or None
         The number of ligand sequences, default is 1.T his value
         will be overwritten if `seq_id` is specified.
-    is_registered : bool
+    _is_registered : bool
         A flag indicating whether the record is already registered or not.
     """
     def __init__(self, num: int = 1, seq_id: list[str] | None = None):
-        self._seq_id: list[str] | None= seq_id
+        self._seq_id: list[str] | None = seq_id
         if self._seq_id is None:
-            self._num = num
+            self._num: int = num
         else:
-            self._num = len(seq_id)
-        self.is_registered: bool = False
+            self._num: int = len(self._seq_id)
+        self._is_registered: bool = False
+
+    def _update_num(self) -> None:
+        if self._seq_id is None:
+            self._num = 1
+        else:
+            self._num = len(self._seq_id)
 
     @property
     def num(self) -> int:
         return self._num
 
-    def get_id(self) -> list[str]:
+    @property
+    def is_registered(self) -> bool:
+        return self._is_registered
+
+    def set_registered(self) -> None:
+        self._is_registered = True
+
+    def get_id(self) -> list[str] | None:
         return self._seq_id
 
-    def set_id(self, seq_id: list[str]) -> None:
+    def set_id(self, seq_id: list[str] | None) -> None:
+        """
+        Set a new sequence identifier for the object. If an empty list is passed as the
+        sequence identifier, the identifier will be set to None. After updating the sequence
+        identifier, the method triggers the update of internal numbering.
+
+        Parameters
+        ----------
+        seq_id : list of str or None
+            A list of string sequence identifiers to be associated with the object. If
+            an empty list is passed, the sequence identifier is set to None.
+
+        Notes
+        -------
+        - This function sets the registered flag to False. Please reset the corresponding
+          `IDRegister` if the object is already attached to `InputFile` to prevent ID clashes.
+        """
+        if isinstance(seq_id, list) and len(seq_id) == 0:
+            self._seq_id = None
         self._seq_id = seq_id
-        self._num = len(seq_id)
+        self._update_num()
+        self._is_registered = False
 
     def remove_id(self) -> None:
-        self._seq_id = None
-        self.is_registered = False
+        self.set_id(None)
 
 
 class IDRegister(object):

@@ -78,7 +78,7 @@ class InputFile(DictMixin):
                 if seq_ids is not None:
                     for seq_id in seq_ids:
                         self._id_register.register(seq_id)
-                        entry.is_registered = True
+                    entry.set_registered()
 
     def _assign_ids(self) -> None:
         """
