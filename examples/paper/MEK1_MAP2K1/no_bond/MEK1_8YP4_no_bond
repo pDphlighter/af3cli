@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Example
+# Structure of MAP2K1 (MEK1) in complex with 5Z7-oxozeaenol, no covalent bond assigned, native ligand
+# Details:
+# - Protein Data Bank (PDB) Entry: 8YP4
+# - Reference: https://www.rcsb.org/structure/8YP4
+
+# Define filename and job name
+FILENAME="paper_no_bond_cli.json"
+JOB_NAME="paper_no_bond_cli_job"
+
+# Protein sequence for MEK1
+PROTEIN_SEQUENCE="\
+MQKKLEELELDEQQRKRLEAFLTQKQKVGELKDDDFEKISELGAGNGGVVFKVSHKPSGLVMARKLIHLEIKP\
+AIRNQIIRELQVLHECNSPYIVGFYGAFYSDGEISICMEHMDGGSLDQVLKKAGRIPEQILGKVSIAVIKGLT\
+YLREKHKIMHRDVKPSNILVNSRGEIKLCDFGVSGQLIDSMANSFVGTRSYMSPERLQGTHYSVQSDIWSMGL\
+SLVEMAVGRYPIPPPDAKELELMFGCQVEGDAAEAPPRPRAPGRPLASYGMDSRPPMAIFELLDYIVNEPPPK\
+LPSGVFSLEFQDFVNKCLIKNPAERADLKQLMVHAFIKRSDAEEVDFAGWLCSTIGLNQPSTAAALEHHHHHH\
+"
+
+# Ligand 5Z7-oxozeaenol, native
+LIGAND_CCD="1FM"
+
+# Run the CLI command
+af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
+  - protein add --sequence "${PROTEIN_SEQUENCE}" \
+  - ligand add --ccd ${LIGAND_CCD} \
+  - debug --show  # Exclude this line to enable .json file creation
