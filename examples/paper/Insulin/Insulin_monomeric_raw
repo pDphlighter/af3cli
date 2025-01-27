@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Example
+# Insulin monomer without further ligands
+# Details:
+# - Protein Data Bank (PDB) Entry: 1ZNI
+# - Reference: https://www.rcsb.org/structure/1ZNI
+
+# Define filename and job name
+FILENAME="paper_insulin_monomeric_raw_cli.json"
+JOB_NAME="paper_insulin_monomeric_raw_cli_job"
+
+# Sequence entries
+
+## Protein entries
+CHAIN_A="\
+GIVEQCCTSICSLYQLENYCN\
+"
+CHAIN_B="\
+FVNQHLCGSHLVEALYLVCGERGFFYTPKA\
+"
+
+# Run the CLI command
+af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
+  - protein add --sequence "${CHAIN_A}" \
+  - protein add --sequence "${CHAIN_B}" \
+  - debug --show  # Exclude this line to enable .json file creation
