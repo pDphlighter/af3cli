@@ -28,5 +28,5 @@ WATER_NUM=48
 af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - protein add --sequence "${CHAIN_A}" \
   - protein add --sequence "${CHAIN_B}" \
-  - ligand add --smiles ${WATER} --num ${WATER_NUM} \
-  - debug --show  # Exclude this line to enable .json file creation
+  - ligand add --smiles ${WATER} --num ${WATER_NUM} #\
+#  - debug --show  # Exclude this line to enable .json file creation

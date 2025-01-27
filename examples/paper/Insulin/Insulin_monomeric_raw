@@ -23,5 +23,5 @@ FVNQHLCGSHLVEALYLVCGERGFFYTPKA\
 # Run the CLI command
 af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - protein add --sequence "${CHAIN_A}" \
-  - protein add --sequence "${CHAIN_B}" \
-  - debug --show  # Exclude this line to enable .json file creation
+  - protein add --sequence "${CHAIN_B}" #\
+#  - debug --show  # Exclude this line to enable .json file creation
