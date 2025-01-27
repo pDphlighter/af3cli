@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Example
+# Insulin hexamer with water molecules and zinc ion
+# Details:
+# - Protein Data Bank (PDB) Entry: 1ZNI // 1ZEI
+# - Reference: https://www.rcsb.org/structure/1ZNI // 1ZEI
+
+# Define filename and job name
+FILENAME="paper_insulin_hexamer_water_zinc_cli.json"
+JOB_NAME="paper_insulin_hexamer_water_zinc__cli_job"
+
+# Sequence entries
+
+## Protein entries
+CHAIN_A="\
+GIVEQCCTSICSLYQLENYCN\
+"
+CHAIN_B="\
+FVNQHLCGSHLVEALYLVCGERGFFYTPKA\
+"
+
+CHAIN_NUM=6
+
+# Water molecules
+WATER="O"
+WATER_NUM=288
+
+# Zinc ion
+ZINC="ZN"
+
+# Run the CLI command
+af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
+  - protein add --sequence "${CHAIN_A}" --num ${CHAIN_NUM} \
+  - protein add --sequence "${CHAIN_B}" --num ${CHAIN_NUM} \
+  - ligand add --smiles ${WATER} --num ${WATER_NUM} \
+  - ligand add --ccd ${ZINC} \
+  - debug --show  # Exclude this line to enable .json file creation
