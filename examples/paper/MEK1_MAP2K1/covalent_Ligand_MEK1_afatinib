@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Example
+# Structure of MAP2K1 (MEK1) in complex with afatinib
+# Details:
+# - Protein Data Bank (PDB) Entry: 8YP4
+# - Reference: https://www.rcsb.org/structure/8YP4
+
+# Define filename and job name
+FILENAME="paper_covalent_bond_afatinib_cli.json"
+JOB_NAME="paper_covalent_bond_afatinib_cli_job"
+
+# Protein sequence for MEK1
+PROTEIN_SEQUENCE="\
+MQKKLEELELDEQQRKRLEAFLTQKQKVGELKDDDFEKISELGAGNGGVVFKVSHKPSGLVMARKLIHLEIKP\
+AIRNQIIRELQVLHECNSPYIVGFYGAFYSDGEISICMEHMDGGSLDQVLKKAGRIPEQILGKVSIAVIKGLT\
+YLREKHKIMHRDVKPSNILVNSRGEIKLCDFGVSGQLIDSMANSFVGTRSYMSPERLQGTHYSVQSDIWSMGL\
+SLVEMAVGRYPIPPPDAKELELMFGCQVEGDAAEAPPRPRAPGRPLASYGMDSRPPMAIFELLDYIVNEPPPK\
+LPSGVFSLEFQDFVNKCLIKNPAERADLKQLMVHAFIKRSDAEEVDFAGWLCSTIGLNQPSTAAALEHHHHHH\
+"
+PROTEIN_ID="A"
+RESIDUE_POSITION=175
+RESIDUE_BOND_ATOM_ID="SG"
+
+# Ligand afatinib, bound form
+LIGAND_CCD="0WN"
+LIGAND_ID="B"
+LIGAND_POSITION=1
+LIGAND_BOND_ATOM_ID="C30"
+
+# Bond expression
+BOND_EXPRESSION="\
+${LIGAND_ID}:${LIGAND_POSITION}:${LIGAND_BOND_ATOM_ID}-\
+${PROTEIN_ID}:${RESIDUE_POSITION}:${RESIDUE_BOND_ATOM_ID}\
+"
+
+
+# Run the CLI command
+af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
+  - protein add --sequence "${PROTEIN_SEQUENCE}" -i ${PROTEIN_ID} \
+  - ligand add --ccd ${LIGAND_CCD} -i ${LIGAND_ID} \
+  - bond --add ${BOND_EXPRESSION} \
+  - debug --show  # Exclude this line to enable .json file creation
