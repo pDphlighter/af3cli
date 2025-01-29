@@ -27,14 +27,10 @@ ligands = {
     "6GUK":"CCn1cnc2c1nc(nc2Nc3cccc(c3)Cl)N[C@@H]4CCCC[C@@H]4N"
 }
 
-# Create CDK2 protein sequence object
-cdk2_sequence = ProteinSequence(CDK2_SEQUENCE_STR)
-
-
 for k,v in ligands.items():
     builder = InputBuilder()
     builder.set_name(f"paper_screening_{k}_job")
-    builder.add_sequence(cdk2_sequence)
+    builder.add_sequence(ProteinSequence(CDK2_SEQUENCE_STR))
     builder.add_ligand(SMILigand(v))
     builder.build().write(f"paper_screening_{k}.json")
 
