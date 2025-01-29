@@ -19,7 +19,7 @@ def search_in_cif(file_path, search_string):
 
 
 search_string = "WNT"
-cif_file_path = "/home/doepnerp/Projekte/Development/local/python_scripts/python_sandbox/components.cif"
+cif_file_path = "/home/doepnerp/Projekte/Development/local/af3cli_paper/components.cif"
 
 if __name__ == "__main__":
     search_in_cif(cif_file_path, search_string)
