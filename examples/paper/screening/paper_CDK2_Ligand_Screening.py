@@ -33,7 +33,7 @@ cdk2_sequence = ProteinSequence(CDK2_SEQUENCE_STR)
 
 for k,v in ligands.items():
     builder = InputBuilder()
-    builder.set_name(f"paper_screening_{k}")
+    builder.set_name(f"paper_screening_{k}_job")
     builder.add_sequence(cdk2_sequence)
     builder.add_ligand(SMILigand(v))
     builder.build().write(f"paper_screening_{k}.json")
