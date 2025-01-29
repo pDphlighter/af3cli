@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from enum import StrEnum
 from abc import ABCMeta
 from typing import Generator
+import re
 
 from .mixin import DictMixin
 from .exception import (AFSequenceError, AFTemplateError,
@@ -243,18 +246,19 @@ class Sequence(IDRecord, DictMixin):
 
     Attributes
     ----------
-    seq_type : SequenceType
+    _seq_type : SequenceType
         The type of the sequence (e.g., Protein, DNA, RNA).
-    seq_str : str
+    _seq_str : str
         The string representation of the sequence.
-    msa : MSA or None
+    _msa : MSA or None
         The multiple sequence alignment (MSA) information, if available.
-    modifications : list of Modification
+    _modifications : list of Modification
         Modifications associated with the sequence.
-    templates : list of Template
+    _templates : list of Template
         Templates associated with the sequence. Supported only for protein sequences.
-    num : int
-        The number of sequences associated with the sequence ID.
+    _num : int
+        The number of sequences associated with the sequence ID. This value
+        will be overwritten if `seq_id` is specified.
     _seq_id : list[str] or None
         The sequence ID(s) associated with the sequence. These can be
         either specified as a list of strings or will be automatically
@@ -264,44 +268,50 @@ class Sequence(IDRecord, DictMixin):
         self,
         seq_type: SequenceType,
         seq_str: str,
-        num: int | None = None,
-        seq_name: str | None = None,
+        seq_name: str = "",
+        num: int = 1,
         seq_id: list[str] | None = None,
         modifications: list[Modification] | None = None,
         templates: list[Template] | None = None,
         msa: MSA | None = None,
     ):
-        super().__init__(None)
-        self.seq_name: str | None = seq_name
-        self.seq_str: str = seq_str
-        self.seq_type: SequenceType = seq_type
-        self.msa: MSA | None = msa
+        super().__init__(num, None)
+        self._seq_str: str = seq_str
+        self._seq_type: SequenceType = seq_type
+        self.seq_name: str = seq_name
+
+        self._msa: MSA | None = msa
 
         if modifications is None:
             modifications = []
-        self.modifications: list[Modification] = modifications
+        self._modifications: list[Modification] = modifications
 
         if seq_type != SequenceType.PROTEIN and templates is not None:
             raise AFTemplateError("Templates are only supported for proteins.")
 
         if templates is None:
             templates = []
-        self.templates: list[Template] = templates
-
-        # can be overwritten if seq_id is specified
-        if num is None:
-            self.num: int = 1
-        else:
-            self.num: int = num
+        self._templates: list[Template] = templates
 
         if seq_id is not None:
             self._seq_id: list[str] = seq_id
-            if num is None:
-                self.num: int = len(seq_id)
-            elif len(seq_id) != num:
-                raise ValueError((f"Sequence ID length ({len(seq_id)}) does "
-                                  f"not match sequence number ({num})."))
-        
+            self._num: int = len(seq_id)
+
+    @property
+    def sequence(self) -> str:
+        return self._seq_str
+
+    @property
+    def sequence_type(self) -> SequenceType:
+        return self._seq_type
+
+    @property
+    def msa(self) -> MSA | None:
+        return self._msa
+
+    @property
+    def modifications(self) -> list[Modification]:
+        return self._modifications
 
     def _validate_modification_types(self):
         """
@@ -313,17 +323,17 @@ class Sequence(IDRecord, DictMixin):
             True if all modifications in `modifications` are valid for the given
             `seq_type`, or if `modifications` is empty. False otherwise.
         """
-        if len(self.modifications) == 0:
+        if len(self._modifications) == 0:
             return True
-        if self.seq_type == SequenceType.PROTEIN:
+        if self._seq_type == SequenceType.PROTEIN:
             return all(
                 isinstance(mod, ResidueModification)
-                for mod in self.modifications
+                for mod in self._modifications
             )
         else:
             return all(
                 isinstance(mod, NucleotideModification)
-                for mod in self.modifications
+                for mod in self._modifications
             )
 
     def to_dict(self) -> dict:
@@ -347,10 +357,10 @@ class Sequence(IDRecord, DictMixin):
          AFModificationError
              If the modifications are invalid for the sequence type.
          """
-        if not is_valid_sequence(self.seq_type, self.seq_str):
+        if not is_valid_sequence(self._seq_type, self._seq_str):
             raise AFSequenceError(
                 f"Invalid sequence for sequence type "
-                f"{self.seq_type.name} ({self})."
+                f"{self._seq_type.name} ({self})."
             )
 
         if not self._validate_modification_types():
@@ -360,26 +370,132 @@ class Sequence(IDRecord, DictMixin):
 
         content = dict()
         content["id"] = self.get_id()
-        content["sequence"] = self.seq_str
-        if len(self.modifications):
-            content["modifications"] = [m.to_dict() for m in self.modifications]
-        if len(self.templates):
-            content["templates"] = [t.to_dict() for t in self.templates]
-        if self.msa is not None:
-            content |= self.msa.to_dict()
-        return {self.seq_type.value: content}
+        content["sequence"] = self._seq_str
+        if len(self._modifications):
+            content["modifications"] = [m.to_dict() for m in self._modifications]
+        if self._msa is not None:
+            content |= self._msa.to_dict()
+        return {self._seq_type.value: content}
 
     def __str__(self) -> str:
-        display_template = "T" if len(self.templates) else ""
-        display_mod = "M" if len(self.modifications) else ""
-        display_msa = "MSA" if self.msa is not None else ""
+        display_template = "T" if len(self._templates) else ""
+        display_mod = "M" if len(self._modifications) else ""
+        display_msa = "MSA" if self._msa is not None else ""
         display_flags = ",".join(
             v for v in [display_template, display_mod, display_msa] if v
         )
-        return f"{self.seq_type.name}({len(self.seq_str)})[{display_flags}]"
+        return f"{self._seq_type.name}({len(self._seq_str)})[{display_flags}]"
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.seq_type.name})>"
+        return f"<{self.__class__.__name__}({self._seq_type.name})>"
+
+
+class ProteinSequence(Sequence):
+    """
+    Represents a protein sequence, inheriting properties and functionality
+    from the `Sequence` base class.
+    """
+    def __init__(
+        self,
+        seq_str: str,
+        seq_name: str | None = None,
+        num: int = 1,
+        seq_id: list[str] | None = None,
+        modifications: list[ResidueModification] | None = None,
+        templates: list[Template] | None = None,
+        msa: MSA | None = None,
+    ):
+        super().__init__(
+            SequenceType.PROTEIN,
+            seq_str=seq_str,
+            seq_name=seq_name,
+            num=num,
+            seq_id=seq_id,
+            modifications=modifications,
+            templates=templates,
+            msa=msa,
+        )
+
+    @property
+    def templates(self) -> list[Template]:
+        return self._templates
+
+    def to_dict(self) -> dict:
+        content = super().to_dict().get(self._seq_type.value)
+        if len(self._templates):
+            content["templates"] = [t.to_dict() for t in self._templates]
+        return {self._seq_type.value: content}
+
+
+class DNASequence(Sequence):
+    """
+    Represents a DNA sequence, inheriting properties and functionality
+    from the `Sequence` base class.
+    """
+    def __init__(
+        self,
+        seq_str: str,
+        seq_name: str | None = None,
+        num: int = 1,
+        seq_id: list[str] | None = None,
+        modifications: list[NucleotideModification] | None = None,
+    ):
+        super().__init__(
+            SequenceType.DNA,
+            seq_str=seq_str,
+            seq_name=seq_name,
+            num=num,
+            seq_id=seq_id,
+            modifications=modifications,
+        )
+
+    def reverse_complement(self) -> DNASequence:
+        """
+            Generates the reverse complement of the DNA sequence.
+
+            Returns
+            -------
+            DNASequence
+                A new DNASequence instance representing the reverse complement
+                of this sequence with the same sequence name and number of
+                entities.
+        """
+        cmap = {
+            'A': 'T',
+            'T': 'A',
+            'C': 'G',
+            'G': 'C'
+        }
+        complement = ''.join(cmap[base] for base in self._seq_str)
+        complement = complement[::-1]
+        return DNASequence(
+            complement, num=self._num, seq_name=self.seq_name,
+        )
+
+
+class RNASequence(Sequence):
+    """
+    Represents a RNA sequence, inheriting properties and functionality
+    from the `Sequence` base class.
+    """
+    def __init__(
+        self,
+        seq_str: str,
+        seq_name: str | None = None,
+        num: int = 1,
+        seq_id: list[str] | None = None,
+        modifications: list[NucleotideModification] | None = None,
+        msa: MSA | None = None,
+    ):
+        super().__init__(
+            SequenceType.RNA,
+            seq_str=seq_str,
+            seq_name=seq_name,
+            num=num,
+            seq_id=seq_id,
+            modifications=modifications,
+            msa=msa,
+        )
 
 
 def read_fasta(filename: str) -> Generator[tuple[str, str], None, None]:
@@ -476,6 +592,24 @@ def identify_sequence_type(seq_str: str) -> SequenceType | None:
     return None
 
 
+def sanitize_sequence_name(name: str) -> str:
+    """
+    Sanitizes a sequence name by replacing unwanted characters and
+    stripping whitespace.
+
+    Parameters
+    ----------
+    name : str
+        The original sequence name to be sanitized.
+
+    Returns
+    -------
+    str
+        The sanitized sequence name.
+    """
+    return re.sub(r'[ |:|]', '_', name).strip()
+
+
 def fasta2seq(filename: str) -> Generator[Sequence | None, None, None]:
     """
     Converts a FASTA file into a sequence generator.
@@ -500,6 +634,8 @@ def fasta2seq(filename: str) -> Generator[Sequence | None, None, None]:
             yield None
             continue
 
-        yield Sequence(seq_type=seq_type, 
-                       seq_name=entry_name.replace(' ', '_').replace('|', '_').replace(':', '_').strip(),
-                       seq_str=entry_seq)
+        yield Sequence(
+            seq_type=seq_type,
+            seq_name=entry_name.replace(' ', '_').replace('|', '_').replace(':', '_').strip(),
+            seq_str=entry_seq
+        )

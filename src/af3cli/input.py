@@ -78,7 +78,7 @@ class InputFile(DictMixin):
                 if seq_ids is not None:
                     for seq_id in seq_ids:
                         self._id_register.register(seq_id)
-                        entry.is_registered = True
+                    entry.set_registered()
 
     def _assign_ids(self) -> None:
         """
@@ -108,12 +108,12 @@ class InputFile(DictMixin):
         self._id_register.reset()
 
     def merge(
-            self,
-            other: InputFile,
-            reset: bool = True,
-            seeds: bool = False,
-            bonded_atoms: bool = False,
-            userccd: bool = False
+        self,
+        other: InputFile,
+        reset: bool = True,
+        seeds: bool = False,
+        bonded_atoms: bool = False,
+        userccd: bool = False
     ) -> None:
         """
         Merges the content of another InputFile instance into the current

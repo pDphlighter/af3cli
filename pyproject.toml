@@ -1,19 +1,32 @@
 [project]
 name = "af3cli"
-version = "0.1.0"
+version = "0.3.1"
 description = """
 A command-line interface and Python library for generating AlphaFold3 input files.
 """
 readme = "README.md"
+license = "MIT"
+license-files =  ["LICENSE"]
 authors = [
     { name = "Lukas Schulig", email = "schuligl@uni-greifswald.de" },
     { name = "Philipp Döpner", email = "doepnerp@uni-greifswald.de" },
-    { name = "Mark Doerr", email = "mark.doerr@uni-greifswald.de" }
+    { name = "Mark Dörr", email = "mark.doerr@uni-greifswald.de" }
+]
+keywords = ["AlphaFold", "CLI"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 requires-python = ">=3.11"
 dependencies = [
     "fire>=0.7.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/SLx64/af3cli.git"
 
 [project.scripts]
 af3cli = "af3cli.__main__:main"

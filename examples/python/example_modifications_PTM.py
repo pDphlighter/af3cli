@@ -6,15 +6,16 @@ This script provides a Python implementation as an alternative to the af3cli inp
 """
 
 import pprint
-from af3cli import InputBuilder, Sequence, SequenceType, Ligand, LigandType
-from af3cli.sequence import ResidueModification, NucleotideModification
+from af3cli import InputBuilder
+from af3cli import CCDLigand
+from af3cli import ProteinSequence, RNASequence, DNASequence
+from af3cli import ResidueModification, NucleotideModification
 
 # Define File and Job Name
 FILENAME = "example_modifications_PTM.json"
 JOB_NAME = "example_modifications_PTM_py_job"
 
 # Define Protein Data
-Protein_SEQUENCE_TYPE = SequenceType.PROTEIN
 Protein_SEQUENCE_STR = (
     "MVQDTGKDTNLKGTAEANESVVYCDVFMQAALKEATCALEEGEVPVGCVLVKADSSTAAQAQAGDDLALQKLI"
     "VARGRNATNRKGHGLAHAEFVAVEELLRQATAGTSENIGGGGNSGAVSQDLADYVLYVVVEPCIMCAAMLLYN"
@@ -30,7 +31,6 @@ PROTEIN_MODIFICATIONS = [
 ]
 
 # Define RNA Data
-RNA_SEQUENCE_TYPE = SequenceType.RNA
 RNA_SEQUENCE_STR=(
     "GGCCGCUUAGCACAGUGGCAGUGCACCACUCUCGUAAAGUGGGGGUCGCGAGUUCGAUUCUCGCAGUGGCCUCCA"
 )
@@ -42,7 +42,6 @@ RNA_MODIFICATIONS = [
 ]
 
 # Define DNA Data
-DNA_SEQUENCE_TYPE = SequenceType.DNA
 DNA_SEQUENCE_STR="ACGTTTCAGAGGCC"
 
 DNA_MODIFICATIONS = [
@@ -53,33 +52,32 @@ DNA_MODIFICATIONS = [
 ]
 
 # Define Ligand Data
-LIGAND_TYPE = LigandType.CCD
-ZINC_ION_CCD ="CA"
+ZINC_ION_CCD = ["CA"]
 LIGAND_NUM = 8
 
 # Create Protein Sequence Object
-protein_sequence = Sequence(
-    seq_type=Protein_SEQUENCE_TYPE,
+protein_sequence = ProteinSequence(
     seq_str=Protein_SEQUENCE_STR,
-    modifications=PROTEIN_MODIFICATIONS)
+    modifications=PROTEIN_MODIFICATIONS
+)
 
 # Create RNA Sequence Object
-rna_sequence = Sequence(
-    seq_type=RNA_SEQUENCE_TYPE,
+rna_sequence = RNASequence(
     seq_str=RNA_SEQUENCE_STR,
-    modifications=RNA_MODIFICATIONS)
+    modifications=RNA_MODIFICATIONS
+)
 
 # Create DNA Sequence Object
-dna_sequence = Sequence(
-    seq_type=DNA_SEQUENCE_TYPE,
+dna_sequence = DNASequence(
     seq_str=DNA_SEQUENCE_STR,
-    modifications=DNA_MODIFICATIONS)
+    modifications=DNA_MODIFICATIONS
+)
 
 # Create Ligand Object
-ligand = Ligand(
-    ligand_type=LIGAND_TYPE,
-    ligand_str=ZINC_ION_CCD,
-    num=LIGAND_NUM)
+ligand = CCDLigand(
+    ligand_value=ZINC_ION_CCD,
+    num=LIGAND_NUM
+)
 
 # Build Input Configuration for the Job
 input_builder = InputBuilder()

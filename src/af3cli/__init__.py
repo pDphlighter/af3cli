@@ -1,5 +1,8 @@
-from .ligand import Ligand, LigandType
+__version__ = "0.3.1"
+
+from .ligand import Ligand, LigandType, SMILigand, CCDLigand
 from .sequence import Sequence, SequenceType
+from .sequence import ProteinSequence, DNASequence, RNASequence
 from .sequence import Template, TemplateType, MSA
 from .sequence import ResidueModification, NucleotideModification
 from .bond import Atom, Bond

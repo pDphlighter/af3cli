@@ -9,7 +9,7 @@ We recommend using [uv](https://github.com/astral-sh/uv) to manage your installa
 uv sync --locked
 ```
 
-This automatically creates a virtual environment `.venv` in the project folder and installs all dependencies. If you do not need the optional dependencies for reading SDF (RDKit) or FASTA files (Biopython), the installation can be prevented with `--no-group features`.
+This automatically creates a virtual environment `.venv` in the project folder and installs all dependencies. If you do not need the optional dependencies for reading SDF ([RDKit](https://github.com/rdkit/rdkit)) or FASTA files ([Biopython](https://github.com/biopython/biopython)), the installation can be prevented with `--no-group features`.
 
 ## Basic Usage
 
@@ -92,20 +92,44 @@ af3cli [...] \
     - rna add --sequence "UUUGGCCGG"
 ```
 
-A check is performed to ensure that the sequence characters match the respective type in the CLI application or in the Python library itself, when the `Sequence` object is converted into a dictionary.
+A check is performed to ensure that the sequence characters match the respective type in the CLI application or in the Python library itself, when the `Sequence` object is converted into a dictionary. When using the sequence base class, the corresponding `SequenceType` must be specified. We therefore provide derived classes for the respective sequence types to simplify use.
 
 ```python
-from af3cli import Sequence, SequenceType
+from af3cli import ProteinSequence # DNASequence, RNASequence
 
-# SequenceType.DNA / SequenceType.RNA
-protein_seq = Sequence(
-    SequenceType.PROTEIN,
+# DNASequence / RNASequence
+protein_seq = ProteinSequence(
     "MVKLAGST...",
     #[...]
 )
 
 builder.add_sequence(protein_seq)
 ```
+
+For DNA sequences, it is possible to generate the reverse complementary strand. The associated data, such as manually specified IDs or modifications, are not included. The CLI tool will generate appropriate warnings.
+
+```shell
+af3cli [...] \
+    - dna add --sequence "AATTTTCC" --complement
+```
+
+Python:
+
+```python
+from af3cli import DNASequence
+
+
+dna_seq = DNASequence(
+    "AATTTTCC...",
+    #[...]
+)
+rc_dna_seq = dna_seq.reverse_complement()
+
+builder.add_sequence(dna_seq)
+builder.add_sequence(rc_dna_seq)
+```
+
+If modifications or manually defined IDs are required, the complementary sequence must be created separately.
 
 #### FASTA Files
 
@@ -151,14 +175,12 @@ af3cli [...] dna [...] - modification --mod "6OG" --pos 1
 When using the Python API, you have to explicitly define what kind of modifications you would like to add, since the resulting JSON fields are different for protein (`ResidueModification`) or nucleotide sequences (`NucleotideModification`). Please note that checks are performed to verify the modification types when the `Sequence` object is converted to a dictionary.
 
 ```python
-from af3cli import (Sequence, SequenceType,
-                    ResidueModification,
-                    NucleotideModification)
+from af3cli import ProteinSequence, ResidueModification
+                   # NucleotideModification
 
 rmod = ResidueModification("SEP", 5)
 
-protein_seq = Sequence(
-    SequenceType.PROTEIN,
+protein_seq = ProteinSequence(
     "<SEQUENCE>",
     # [...]
     modifications=[rmod]
@@ -187,7 +209,7 @@ af3cli [...] protein [...] \
 As it makes no difference to Python whether the string contains a path to a file or the file content, all you need to do is specify the template type. The file must then be read manually beforehand if a string is desired in the JSON file.
 
 ```python
-from af3cli import Template, TemplateType
+from af3cli import Template, TemplateType, ProteinSequence
 
 # TemplateType.FILE for relative/absolute path
 t = Template(
@@ -196,8 +218,7 @@ t = Template(
     qidx=[], tidx=[]
 )
 
-protein_seq = Sequence(
-    SequenceType.PROTEIN,
+protein_seq = ProteinSequence(
     "<SEQUENCE>",
     # [...]
     templates=[t]
@@ -228,15 +249,14 @@ msa = MSA(
     paired_is_path=True, unpaired_is_path=True,
 )
 
-protein_seq = Sequence(
-    SequenceType.PROTEIN,
+protein_seq = ProteinSequence(
     "<SEQUENCE>",
-    #[...]
+    # [...]
     msa=msa
 )
 
 # alternative
-protein_seq.msa = msa
+protein_seq._msa = msa
 ```
 
 ### Ligands and Ions
@@ -251,10 +271,10 @@ af3cli [...] \
     - ligand add --sdf ligands.sdf
 ```
 
-Python:
+In Python, either the parent class `Ligand` together with the respective `LigandType` or alternatively the corresponding child classes `CCDLigand` or `SMILigand` can be used to add new ligands.
 
 ```python
-from af3cli import Ligand, LigandType
+from af3cli import Ligand, LigandType, SMILigand
 from af3cli.ligand import sdf2smiles
 
 ligand = Ligand(
@@ -262,6 +282,9 @@ ligand = Ligand(
     "CCC",
     #[...]
 )
+
+# using SMILigand
+# ligand = SMILigand("CCC")
 
 builder.add_ligand(ligand)
 
@@ -271,6 +294,7 @@ for smi in sdf2smiles("ligands.sdf"):
         Ligand(LigandType.SMILES, smi)
     )
 ```
+
 ### Custom CCD
 
 Please refer to the [AlphaFold3 input documentation](https://github.com/google-deepmind/alphafold3/blob/main/docs/input.md#user-provided-ccd-format) on how to generate valid CCD mmCIF files.
@@ -347,11 +371,10 @@ af3cli [...] \
 
 You can also specify IDs or a number in connection with an SDF file, whereby it should be noted that the number of manually specified IDs must correspond to the number of ligands in the SDF file. If a number is specified, all entries in the SDF are then multiplied by this number.
 
-In Python, the number or explicit IDs can be specified when initializing `Ligand` or `Sequence` objects. If both parameters are specified, their count must match. The registration or automatic assignment of IDs only takes place in connection with an `InputFile` object and is carried out when the file is converted into a dictionary (e.g. when the file is written).
+In Python, the number or explicit IDs can be specified when initializing `Ligand` or `Sequence` objects. If both parameters are specified, IDs are prioritized. The registration or automatic assignment of IDs only takes place in connection with an `InputFile` object and is carried out when the file is converted into a dictionary (e.g. when the file is written). If the IDs of a sequence are changed after they have already been registered, the `IDRegister` must be reset.
 
 ```python
-ligand = Ligand(
-    LigandType.SMILES,
+ligand = SMILigand(
     "CCC",
     seq_id=["A", "B"],
     num=2

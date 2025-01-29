@@ -14,6 +14,7 @@ from .builder import InputBuilder
 from .ligand import Ligand, LigandType, sdf2smiles
 from .bond import Bond
 from .sequence import Sequence, SequenceType
+from .sequence import ProteinSequence, DNASequence, RNASequence
 from .sequence import Template, TemplateType, MSA
 from .sequence import (Modification, NucleotideModification,
                        ResidueModification)
@@ -426,8 +427,9 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
         The sequence string.
     _sequence_ids : list[str], str or None
         A list or single identifier(s) associated with the sequence.
-    _sequence_num : int or None
-        The number of sequences to be added.
+    _sequence_num : int
+        The number of sequences to be added. Will be overwritten if
+        `_sequence_ids` is not None.
     _modifications : list[Modification] or None
         A list of modifications applied to the sequence.
     _templates : list[Template] or None
@@ -440,15 +442,15 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
         self._parent: CLI | None = None
         self._sequence_str: str | None = None
         self._sequence_ids: list[str] | str | None = None
-        self._sequence_num: int | None = None
-        self._modifications: list[Modification] | None = []
-        self._templates: list[Template] | None = []
+        self._sequence_num: int = 1
+        self._modifications: list[Modification] | None = None
+        self._templates: list[Template] | None = None
         self._msa: MSA | None = None
 
     def add(
         self,
         sequence: str,
-        num: int | None = None,
+        num: int = 1,
         ids: list[str] | None = None,
         fasta: bool = False
     ) -> Self:
@@ -480,9 +482,6 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
             parameters.
 
         """
-        if num is not None and ids is not None:
-            exit_on_error("Cannot specify both num and ids for sequences.")
-
         ids = ensure_opt_str_list(ids)
 
         if fasta:
@@ -518,6 +517,9 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
             Returns the current sequence command object after appending the
             modification, enabling method chaining.
         """
+        if self._modifications is None:
+            self._modifications = []
+
         if self.sequence_type() == SequenceType.PROTEIN:
             self._modifications.append(
                 ResidueModification(mod_str=mod, mod_pos=pos)
@@ -582,32 +584,6 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
         )
         return self
 
-    @hide_from_cli
-    def finalize(self) -> None:
-        """
-        Finalize and add the constructed sequence to the parent builder.
-
-        This method constructs a `Sequence` object using the attributes of the
-        current instance and adds it to the parent builder. It clears templates,
-        modifications, and multiple sequence alignment (MSA) data after the sequence
-        is added to the input file.
-        """
-        sequence = Sequence(
-            seq_type=self.sequence_type(),
-            seq_str=self._sequence_str,
-            num=self._sequence_num,
-            seq_id=self._sequence_ids,
-            modifications=self._modifications or None,
-            templates=self._templates or None,
-            msa=self._msa
-        )
-        self._parent.builder().add_sequence(sequence)
-        logger.info(f"Adding sequence {sequence}")
-
-        self._templates = []
-        self._modifications = []
-        self._msa = None
-
     @abstractmethod
     def sequence_type(self) -> SequenceType:
         """
@@ -640,7 +616,7 @@ class ProteinCommand(SequenceCommand):
     def __init__(self):
         super().__init__()
 
-        self._templates: list[Template] | None = []
+        self._templates: list[Template] = []
 
     def template(
         self,
@@ -701,6 +677,26 @@ class ProteinCommand(SequenceCommand):
         """
         return SequenceType.PROTEIN
 
+    @hide_from_cli
+    def finalize(self) -> None:
+        """
+        Finalize and add the constructed sequence to the parent builder.
+        """
+        sequence = ProteinSequence(
+            seq_str=self._sequence_str,
+            num=self._sequence_num,
+            seq_id=self._sequence_ids,
+            modifications=self._modifications or None,
+            templates=self._templates or None,
+            msa=self._msa
+        )
+        self._parent.builder().add_sequence(sequence)
+        logger.info(f"Adding sequence {sequence}")
+
+        self._templates = []
+        self._modifications = None
+        self._msa = None
+
 
 class DNACommand(SequenceCommand):
     """
@@ -712,6 +708,44 @@ class DNACommand(SequenceCommand):
     """
     def __init__(self):
         super().__init__()
+        self._rev_complement: bool = False
+
+    def add(
+        self,
+        sequence: str,
+        num: int = 1,
+        ids: list[str] | None = None,
+        fasta: bool = False,
+        complement: bool = False
+    ) -> Self:
+        """
+        Adds a given sequence to the current object with options for specifying
+        the number of times to add, associated IDs, and whether to use FASTA
+        format or complementary sequences.
+
+        Parameters
+        ----------
+        sequence : str
+            The sequence to be added.
+        num : int
+            The number of times the sequence should be added. Default is 1.
+        ids : list[str] or None, optional
+            A list of string identifiers associated with the sequence. Default
+            is None.
+        fasta : bool, optional
+            A flag to determine if the sequence should be added in FASTA format.
+            Default is False.
+        complement : bool, optional
+            A flag to indicate if the reverse complement of the sequence should
+            also be added. Modifications and IDs will be ignored. Default is False.
+
+        Returns
+        -------
+        Self
+            The updated instance of the calling object.
+        """
+        self._rev_complement = complement
+        return super().add(sequence, num, ids, fasta)
 
     @hide_from_cli
     def sequence_type(self) -> SequenceType:
@@ -729,6 +763,36 @@ class DNACommand(SequenceCommand):
     @hide_from_cli
     def msa(self):
         raise NotImplementedError("MSA is not available for DNA sequences.")
+
+    @hide_from_cli
+    def finalize(self) -> None:
+        """
+        Finalize and add the constructed sequence to the parent builder.
+        """
+        sequence = DNASequence(
+            seq_str=self._sequence_str,
+            num=self._sequence_num,
+            seq_id=self._sequence_ids,
+            modifications=self._modifications or None
+        )
+        self._parent.builder().add_sequence(sequence)
+        logger.info(f"Adding sequence {sequence}")
+
+        if self._rev_complement:
+            complement = sequence.reverse_complement()
+            self._parent.builder().add_sequence(complement)
+            logger.info(f"Adding sequence {complement}")
+            if self._sequence_ids is not None:
+                logger.warning("ID assignment for complementary sequences "
+                               "is not supported. Please add the complementary "
+                               "sequence separately.")
+            if self._modifications is not None:
+                logger.warning("Modification assignment for complementary "
+                               "sequences is not supported. Please add the"
+                               "complementary sequence separately.")
+
+        self._modifications = None
+        self._rev_complement = False
 
 
 class RNACommand(SequenceCommand):
@@ -754,6 +818,24 @@ class RNACommand(SequenceCommand):
          """
         return SequenceType.RNA
 
+    @hide_from_cli
+    def finalize(self) -> None:
+        """
+        Finalize and add the constructed sequence to the parent builder.
+        """
+        sequence = RNASequence(
+            seq_str=self._sequence_str,
+            num=self._sequence_num,
+            seq_id=self._sequence_ids,
+            modifications=self._modifications or None,
+            msa=self._msa
+        )
+        self._parent.builder().add_sequence(sequence)
+        logger.info(f"Adding sequence {sequence}")
+
+        self._modifications = None
+        self._msa = None
+
 
 class LigandCommand(CLICommand):
     """
@@ -777,7 +859,7 @@ class LigandCommand(CLICommand):
         smiles: str | None = None,
         ccd: list[str] | str | None = None,
         sdf: str | None = None,
-        num: int | None = None,
+        num: int = 1,
         ids: list[str] | None = None
     ) -> Self:
         """
@@ -805,12 +887,12 @@ class LigandCommand(CLICommand):
             simultaneously with `smiles` or `ccd`.
 
         num : int
-            Number of ligands to process. Cannot be used together with `ids`.
+            Number of ligands to process. Will be overwritten if `ids` is
+            specified. Defaults to 1.
 
         ids : list[str]
             List of specific IDs corresponding to the ligands. Used only with
-            `smiles`, `ccd`, or entries in an SDF file. Cannot be used together
-            with `num`.
+            `smiles`, `ccd`, or entries in an SDF file.
 
         Returns
         -------
@@ -822,9 +904,6 @@ class LigandCommand(CLICommand):
 
         if sum(arg is not None for arg in [smiles, ccd, sdf]) != 1:
             exit_on_error("Only one variant should be provided for ligands")
-
-        if num is not None and ids is not None:
-            exit_on_error("Only ids or a number should be provided for ligands")
 
         # create an empty list of ligands since multiple ligands can be
         # added at once with an SDF file.
@@ -850,7 +929,7 @@ class LigandCommand(CLICommand):
                 self._ligands.append(
                     Ligand(
                         ligand_type=LigandType.SMILES,
-                        ligand_str=smi,
+                        ligand_value=smi,
                         num=num,
                         seq_id=k
                     )
@@ -864,7 +943,7 @@ class LigandCommand(CLICommand):
         self._ligands.append(
             Ligand(
                 ligand_type=ligand_type,
-                ligand_str=ligand_str,
+                ligand_value=ligand_str,
                 num=num,
                 seq_id=ids
             )
@@ -978,12 +1057,12 @@ class CLI(CommandBase):
         return self
 
     def merge(
-            self,
-            filename: str,
-            noreset: bool = False,
-            userccd: bool = False,
-            bonds: bool = False,
-            seeds: bool = False
+        self,
+        filename: str,
+        noreset: bool = False,
+        userccd: bool = False,
+        bonds: bool = False,
+        seeds: bool = False
     ) -> CLI:
         """
         Merges the current input object with a specified input file.

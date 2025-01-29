@@ -1,6 +1,7 @@
 import pytest
 
-from af3cli.seqid import num_to_letters, IDRegister
+from af3cli.seqid import num_to_letters
+from af3cli.seqid import IDRecord, IDRegister
 
 
 @pytest.mark.parametrize("num,letters", [
@@ -55,3 +56,42 @@ def test_id_register_reset(register: IDRegister) -> None:
     register.reset()
     assert len(register._registered_ids) == 0
     assert register._count == 0
+
+@pytest.mark.parametrize("num,ids", [
+    (1, ["A"]), (2, ["A", "B"]), (3, ["A", "B", "C"]),
+    (4, ["A"]), (6, ["A", "B", "C", "D"]), (1, None),
+    (6, None)
+])
+def test_id_record(num: int, ids: list[str] | None) -> None:
+    entity = IDRecord(num, ids)
+    assert entity.get_id() == ids
+    if ids is None:
+        assert entity.num == num
+    else:
+        assert entity.num == len(ids)
+
+
+@pytest.mark.parametrize("ids", [
+    ["A"], ["A", "B"], ["A", "B", "C"], [], None
+])
+def test_id_record_assign(ids: list[str] | None) -> None:
+    entity = IDRecord()
+    entity.set_id(ids)
+    if ids is not None and len(ids) == 0:
+        assert entity.get_id() is None
+        assert entity.num == 1
+    else:
+        assert entity.get_id() == ids
+
+    if ids is None or len(ids) == 0:
+        assert entity.num == 1
+    else:
+        assert entity.num == len(ids)
+
+
+def test_id_record_remove() -> None:
+    entity = IDRecord(seq_id=["A", "B", "C"])
+    entity.remove_id()
+    assert entity.get_id() is None
+    assert entity.num == 1
+    assert entity.is_registered == False
