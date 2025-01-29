@@ -38,7 +38,8 @@ ${PROTEIN_ID}:${RESIDUE_POSITION}:${RESIDUE_BOND_ATOM_ID}\
 
 # Run the CLI command
 af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
+  - ccd --filename "/home/doepnerp/Projekte/Development/local/af3cli_paper/components.cif" \
   - protein add --sequence "${PROTEIN_SEQUENCE}" -i ${PROTEIN_ID} \
   - ligand add --ccd ${LIGAND_CCD} -i ${LIGAND_ID} \
-  - bond --add ${BOND_EXPRESSION} \
-  - debug --show  # Exclude this line to enable .json file creation
+  - bond --add ${BOND_EXPRESSION} #\
+#  - debug --show  # Exclude this line to enable .json file creation
