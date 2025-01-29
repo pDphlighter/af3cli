@@ -56,6 +56,8 @@ af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
   - protein add --sequence "${INTEGRASE_OUTER}" --num ${SEQUENCE_NUM} \
   - protein add --sequence "${INTEGRASE_SMALL_INNER}" --num ${SEQUENCE_NUM} \
   - protein add --sequence "${INTEGRASE_SMALL_OUTER}" --num ${SEQUENCE_NUM} \
+  - dna add --sequence "${VDNA_1}" --num ${SEQUENCE_NUM} \
+  - dna add --sequence "${VDNA_1}" --num ${SEQUENCE_NUM} \
   - ligand add --ccd ${DOLUTEGRAVIR} --num ${DOLUTEGRAVIR_NUM} \
   - ligand add --ccd ${MAGNESIUM} --num ${MAGNESIUM_NUM} \
   - ligand add --ccd ${ZINC} --num ${ZINC_NUM} \
