@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Run the CLI command
+# hexamer in complex with one zinc ion
+af3cli config --filename "insulin.json" --jobname "insulin_job" \
+  - protein add --sequence "GIVEQCCTSICSLYQLENYCN" --num 6 \
+  - protein add --sequence "FVNQHLCGSHLVEALYLVCGERGFFYTPKA" --num 6 \
+  - ligand add --ccd "ZN" \
+  - debug --show  # Exclude this line to enable .json file creation
+
+# monomer
+af3cli config --filename "insulin.json" --jobname "insulin_job" \
+  - protein add --sequence "GIVEQCCTSICSLYQLENYCN" \
+  - protein add --sequence "FVNQHLCGSHLVEALYLVCGERGFFYTPKA" \
+  - debug --show  # Exclude this line to enable .json file creation
