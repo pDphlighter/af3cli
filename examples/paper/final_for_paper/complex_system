@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+# Absolute filepath to FASTA file
+filepath_fasta="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/complex_system_protein_vDNA.fasta"
+
+# Run the CLI command
+af3cli config --filename "complex_system.json" --jobname "complex_system_job" \
+  - fasta "${filepath_fasta}" - fasta "${filepath_fasta}" \
+  - ligand add --ccd "DLU" --num 2 \
+  - ligand add --ccd "MG" --num 2 \
+  - ligand add --ccd "ZN" --num 2 \
+  - debug --show  # Exclude this line to enable .json file creation
