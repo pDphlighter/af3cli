@@ -1,28 +1,13 @@
 #!/bin/bash
 
-
-
-
 # Absolute filepath to FASTA file
-filepath_fasta="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")/data/rcsb_pdb_4P5J.fasta"
+filepath_fasta="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/rcsb_pdb_8YP4_edited.fasta"
 
 # Run the CLI command
-af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
-  - rna add --fasta=True --sequence "${filepath_fasta}" \
+af3cli config --filename "bond.json" --jobname "bond_job" \
+  - ccd --filename "/home/doepnerp/Projekte/Development/local/af3cli_paper/components.cif" \
+  - protein add --fasta=True --sequence "${filepath_fasta}" --i "A" \
+  - ligand add --ccd "WNT" -i "B" \
+  - bond --add "B:1:C14-A:175:SG" \
   - debug --show  # Exclude this line to enable .json file creation
 
-
-# Bond expression
-BOND_EXPRESSION="\
-${LIGAND_ID}:${LIGAND_POSITION}:${LIGAND_BOND_ATOM_ID}-\
-${PROTEIN_ID}:${RESIDUE_POSITION}:${RESIDUE_BOND_ATOM_ID}\
-"
-
-
-# Run the CLI command
-af3cli config --filename "${FILENAME}" --jobname "${JOB_NAME}" \
-  - ccd --filename "/home/doepnerp/Projekte/Development/local/af3cli_paper/components.cif" \
-  - protein add --sequence "${PROTEIN_SEQUENCE}" -i ${PROTEIN_ID} \
-  - ligand add --ccd ${LIGAND_CCD} -i ${LIGAND_ID} \
-  - bond --add ${BOND_EXPRESSION} #\
-#  - debug --show  # Exclude this line to enable .json file creation
