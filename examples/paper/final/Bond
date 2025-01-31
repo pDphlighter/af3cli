@@ -6,7 +6,7 @@ filepath_fasta="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/rcsb_pdb_8YP4_edite
 # Run the CLI command
 af3cli config --filename "bond.json" --jobname "bond_job" \
   - ccd --filename "/home/doepnerp/Projekte/Development/local/af3cli_paper/components.cif" \
-  - protein add --fasta=True --sequence "${filepath_fasta}" --i "A" \
+  - protein add --fasta=True --sequence "${filepath_fasta}" -i "A" \
   - ligand add --ccd "WNT" -i "B" \
   - bond --add "B:1:C14-A:175:SG" \
   - debug --show  # Exclude this line to enable .json file creation
