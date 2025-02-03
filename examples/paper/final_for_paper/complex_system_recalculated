@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SEQUENCE="\
+FLDGIDKAQEEHEKYHSNWRAMASDFNLPPVVAKEIVASCDKCQLKGEAMHGQVDCSPGIWQLDCTHLEGKVILVAVH\
+VASGYIEAEVIPAETGQETAYFLLKLAGRWPVKTVHTDNGSNFTSTTVKAACWWAGIKQEFGIPYNPQSQGVIESMNK\
+ELKKIIGQVRDQAEHLKTAVQMAVFIHNFKRKGGIGGYSAGERIVDIIATDIQTKELQKQITKIQNFRVYYRDSRDPV\
+WKGPAKLLWKGEGAVVIQDNSDIKVVPRRKAKIIRDYGKQMAGDDCVASRQDED\
+"
+
+# Run the CLI command
+af3cli config --filename "complex_system_recalc.json" --jobname "complex_system_recalc_job" \
+  - protein add ${SEQUENCE} -n 8 \
+  - dna add "ACTGCTAGAGATTTTCCAC" --complement -n 2 \
+  - ligand add --ccd "DLU" --num 8 \
+  - ligand add --ccd "MG" --num 16 \
+  - ligand add --ccd "ZN" --num 8 #\
+#  - debug --show  # Exclude this line to enable .json file creation
+
+
+
