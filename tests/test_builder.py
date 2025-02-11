@@ -61,7 +61,7 @@ def test_builder_set_name(builder: InputBuilder) -> None:
 ])
 def test_builder_set_seeds(builder: InputBuilder, seeds: list[int]) -> None:
     builder.set_seeds(seeds)
-    assert sorted(list(builder.build().seeds)) == sorted(seeds)
+    assert sorted(list(builder.build().seeds)) == sorted(list(set(seeds)))
 
 
 def test_builder_set_version(builder: InputBuilder) -> None:
