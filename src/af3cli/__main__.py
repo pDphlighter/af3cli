@@ -936,6 +936,9 @@ class LigandCommand(CLICommand):
                 )
             return self
 
+        if isinstance(smiles, list | tuple):
+            exit_on_error("Only a single SMILES string can be provided.")
+
         ligand_str = smiles or ensure_opt_str_list(ccd)
         ligand_type = LigandType.SMILES if smiles else LigandType.CCD
 
