@@ -917,6 +917,8 @@ class LigandCommand(CLICommand):
             # the correponding id values if specified, otherwise the
             # ids cannot be assigned
             if ids is not None:
+                logger.info("Explicit ID assignment is not needed for SDF "
+                            "as each entry is converted to SMILES.")
                 if len(ids) != len(sdf_smiles):
                     exit_on_error("Number of ids does not "
                                   "match number of SDF entries.")
