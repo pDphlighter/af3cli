@@ -74,10 +74,19 @@ class Ligand(IDRecord, DictMixin):
         dict
             A dictionary containing the object's ID and ligand data.
         """
-        if isinstance(self._ligand_value, str) and \
-            self._ligand_type == LigandType.CCD:
-            # otherwise the CCD name string will be treated as list of chars
-            self._ligand_value = [self._ligand_value]
+        match self._ligand_type:
+            case LigandType.CCD:
+                if isinstance(self._ligand_value, str):
+                    # otherwise the CCD name string will be treated as list of chars
+                    self._ligand_value = [self._ligand_value]
+            case LigandType.SMILES:
+                if isinstance(self._ligand_value, list):
+                    if len(self._ligand_value) != 1:
+                        raise ValueError("SMILES value must be a single string")
+                    self._ligand_value, _ = self._ligand_value
+            case _:
+                raise ValueError(f"Invalid ligand type: {self._ligand_type}")
+
         content = dict()
         content["id"] = self.get_id()
         content[self._ligand_type.value] = self._ligand_value
@@ -109,7 +118,7 @@ class SMILigand(Ligand):
     """
     def __init__(
         self,
-        ligand_value: list[str] | str,
+        ligand_value: str,
         num: int = 1,
         seq_id: list[str] | None = None
     ):
