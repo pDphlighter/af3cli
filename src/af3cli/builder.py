@@ -57,7 +57,7 @@ class InputBuilder(object):
         Self
             Returns the instance itself to allow method chaining.
         """
-        self._afinput.reset_ids()
+        self._afinput.reset_all_ids()
         return self
 
     def build(self) -> InputFile:

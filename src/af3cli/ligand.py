@@ -49,12 +49,9 @@ class Ligand(IDRecord, DictMixin):
         self._ligand_value: list[str] | str  = ligand_value
         self._ligand_type: LigandType = ligand_type
 
-        # can be overwritten if seq_id is specified
-        self._num: int = num
-
-        if seq_id is not None:
-            self._seq_id: list[str] = seq_id
-            self._num: int = len(seq_id)
+        # can be overwritten if length of seq_id is larger
+        self.num = num
+        self.set_id(seq_id)
 
     @property
     def ligand_type(self) -> LigandType:
@@ -88,7 +85,7 @@ class Ligand(IDRecord, DictMixin):
                 raise ValueError(f"Invalid ligand type: {self._ligand_type}")
 
         content = dict()
-        content["id"] = self.get_id()
+        content["id"] = self.get_full_id_list()
         content[self._ligand_type.value] = self._ligand_value
         return {"ligand": content}
 
