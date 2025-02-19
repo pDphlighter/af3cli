@@ -61,8 +61,7 @@ class InputFile(DictMixin):
         checking if each entry is already registered. If an entry is not yet
         registered, it retrieves the associated IDs by calling its `get_id`
         method. Each ID from the returned list is then registered into the
-        internal `IDRegister`. Once the IDs are registered, the entry's
-        `is_registered` attribute is set to `True`.
+        internal `IDRegister`.
 
         Raises
         ------
@@ -70,15 +69,14 @@ class InputFile(DictMixin):
             If an item in sequences or ligands does not have `is_registered` or
             `get_id` attributes.
         """
+        self._id_register.reset()
+        self.clear_temporary_ids()
         for seqtype in [self.sequences, self.ligands]:
             for entry in seqtype:
-                if entry.is_registered:
-                    continue
                 seq_ids = entry.get_id()
                 if seq_ids is not None:
                     for seq_id in seq_ids:
                         self._id_register.register(seq_id)
-                    entry.set_registered()
 
     def _assign_ids(self) -> None:
         """
@@ -90,22 +88,27 @@ class InputFile(DictMixin):
         """
         for seqtype in [self.sequences, self.ligands]:
             for entry in seqtype:
-                if entry.get_id() is None:
-                    seq_ids = [self._id_register.generate() for _ in range(entry.num)]
-                    entry.set_id(seq_ids)
+                num_ids = entry.required_tmp_id_count()
+                seq_ids = [self._id_register.generate() for _ in range(num_ids)]
+                entry.set_temporary_id(seq_ids)
 
     def _prepare(self) -> None:
         self._register_ids()
         self._assign_ids()
 
-    def reset_ids(self) -> None:
+    def reset_all_ids(self) -> None:
         """
         Resets the IDs of all entries in the object's sequences and ligands.
         """
         for seqtype in [self.sequences, self.ligands]:
             for entry in seqtype:
                 entry.remove_id()
-        self._id_register.reset()
+                entry.clear_temporary_id()
+
+    def clear_temporary_ids(self) -> None:
+        for seqtype in [self.sequences, self.ligands]:
+            for entry in seqtype:
+                entry.clear_temporary_id()
 
     def merge(
         self,
@@ -153,7 +156,7 @@ class InputFile(DictMixin):
         tmp_input = deepcopy(other)
 
         if reset:
-            tmp_input.reset_ids()
+            tmp_input.reset_all_ids()
         if seeds:
             self.seeds.update(tmp_input.seeds)
         if bonded_atoms:

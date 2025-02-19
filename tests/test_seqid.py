@@ -2,6 +2,8 @@ import pytest
 
 from af3cli.seqid import num_to_letters
 from af3cli.seqid import IDRecord, IDRegister
+from af3cli.input import InputFile
+from af3cli.sequence import ProteinSequence
 
 
 @pytest.mark.parametrize("num,letters", [
@@ -65,7 +67,7 @@ def test_id_register_reset(register: IDRegister) -> None:
 def test_id_record(num: int, ids: list[str] | None) -> None:
     entity = IDRecord(num, ids)
     assert entity.get_id() == ids
-    if ids is None:
+    if ids is None or num > len(ids):
         assert entity.num == num
     else:
         assert entity.num == len(ids)
@@ -93,5 +95,15 @@ def test_id_record_remove() -> None:
     entity = IDRecord(seq_id=["A", "B", "C"])
     entity.remove_id()
     assert entity.get_id() is None
-    assert entity.num == 1
-    assert entity.is_registered == False
+
+
+@pytest.mark.parametrize("seq_id, num", [
+    (["A"], 1), (["A", "B"], 5), (["A", "B", "C"], 3),
+])
+def test_temporary_id(seq_id: list[str] | str | None, num: int) -> None:
+    seq = ProteinSequence("AAQAA", seq_id=seq_id, num=num)
+    input_file = InputFile()
+    input_file.sequences.append(seq)
+    input_file._prepare()
+    assert seq.get_id() == seq_id
+    assert len(seq.get_full_id_list()) == num

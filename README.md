@@ -369,9 +369,11 @@ af3cli [...] \
     - ligand add [...] -n 5
 ```
 
-You can also specify IDs or a number in connection with an SDF file, whereby it should be noted that the number of manually specified IDs must correspond to the number of ligands in the SDF file. If a number is specified, all entries in the SDF are then multiplied by this number.
+You can also specify IDs or a number in connection with an SDF file, whereby it should be noted that the number of manually specified IDs must correspond to the number of ligands in the SDF file. If a number is specified, all entries in the SDF are then multiplied by this number. Since all entries in the SDF file are converted to a SMILES string, manual ID assignment is not needed as bonded atoms are only available for CCD entries.
 
-In Python, the number or explicit IDs can be specified when initializing `Ligand` or `Sequence` objects. If both parameters are specified, IDs are prioritized. The registration or automatic assignment of IDs only takes place in connection with an `InputFile` object and is carried out when the file is converted into a dictionary (e.g. when the file is written). If the IDs of a sequence are changed after they have already been registered, the `IDRegister` must be reset.
+In Python, the number or explicit IDs can be specified when initializing `Ligand` or `Sequence` objects. If both parameters are specified, IDs are prioritized. If the number of IDs assigned is therefore greater than the number, the latter is overwritten. In the opposite case, missing IDs are populated automatically. This also facilitates subsequent changes to the number.
+
+The registration or automatic assignment of IDs only takes place in connection with an `InputFile` object and is carried out when the file is converted into a dictionary (e.g. when the file is written). If the IDs of a sequence are changed after they have already been registered, the `IDRegister` must be reset.
 
 ```python
 ligand = SMILigand(

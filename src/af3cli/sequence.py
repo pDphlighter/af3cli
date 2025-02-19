@@ -280,6 +280,8 @@ class Sequence(IDRecord, DictMixin):
         self._seq_type: SequenceType = seq_type
         self.seq_name: str = seq_name
 
+        # will be overwritten if len(seq_id) is larger
+        self.num = num
         self._msa: MSA | None = msa
 
         if modifications is None:
@@ -293,9 +295,9 @@ class Sequence(IDRecord, DictMixin):
             templates = []
         self._templates: list[Template] = templates
 
-        if seq_id is not None:
-            self._seq_id: list[str] = seq_id
-            self._num: int = len(seq_id)
+        # this will overwrite the sequence count if the length
+        # is larger than the specified number
+        self.set_id(seq_id)
 
     @property
     def sequence(self) -> str:
@@ -369,7 +371,7 @@ class Sequence(IDRecord, DictMixin):
             )
 
         content = dict()
-        content["id"] = self.get_id()
+        content["id"] = self.get_full_id_list()
         content["sequence"] = self._seq_str
         if len(self._modifications):
             content["modifications"] = [m.to_dict() for m in self._modifications]

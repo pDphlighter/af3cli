@@ -49,19 +49,17 @@ class IDRecord(object):
     _seq_id : list of str or None
         The stored sequence IDs.
     _num : int or None
-        The number of ligand sequences, default is 1.T his value
-        will be overwritten if `seq_id` is specified.
-    _is_registered : bool
-        A flag indicating whether the record is already registered or not.
+        The number of ligand sequences, default is 1. This value
+        will be overwritten if `seq_id` is larger.
     """
     def __init__(self, num: int = 1, seq_id: list[str] | None = None):
         self._seq_id: list[str] | None = seq_id
+        self._tmp_seq_id: list[str] = []
         self._num: int = num
-        self._is_registered: bool = False
         self._sanitize_seq_id(seq_id)
         self._sanitize_num(num)
 
-    def _sanitize_seq_id(self, seq_id: list[str] | None) -> None:
+    def _sanitize_seq_id(self, seq_id: list[str] | str | None) -> None:
         """
         Sanitizes the sequence identifier.
 
@@ -76,10 +74,13 @@ class IDRecord(object):
             provided, the internal `_seq_id` attribute is set to None; otherwise,
             it is assigned the provided list.
         """
+        if isinstance(seq_id, str) and len(seq_id) > 0:
+            self._seq_id = [seq_id]
+            return
         if seq_id is None or len(seq_id) == 0:
             self._seq_id = None
         else:
-            self._seq_id =  seq_id
+            self._seq_id = seq_id
 
     def _sanitize_num(self, num: int = 1) -> None:
         """
@@ -91,51 +92,78 @@ class IDRecord(object):
         num : int, optional
             An integer value indicating the desired number. Defaults to 1.
         """
-        if self._seq_id is None:
+        if num < 1:
+            raise ValueError("Sequence ID count must be greater than 0")
+        if self._seq_id is None or len(self._seq_id) <= num:
             self._num = num
         else:
             self._num = len(self._seq_id)
-        if num < 1:
-            self._num = 1
 
     @property
     def num(self) -> int:
         return self._num
 
-    @property
-    def is_registered(self) -> bool:
-        return self._is_registered
+    @num.setter
+    def num(self, num: int) -> None:
+        self._sanitize_num(num)
 
-    def set_registered(self) -> None:
-        self._is_registered = True
+    def set_temporary_id(self, seq_id: list[str]) -> None:
+        """
+        Sets a temporary sequence identifier for the object.
+
+        Parameters
+        ----------
+        seq_id : list of str
+            The list of string identifiers to assign as the temporary
+            sequence identifier.
+        """
+        self._tmp_seq_id = seq_id
+
+    def get_temporary_id(self) -> list[str]:
+        return self._tmp_seq_id
+
+    def required_tmp_id_count(self):
+        if self._seq_id is None:
+            return self._num
+        return self._num - len(self._seq_id)
 
     def get_id(self) -> list[str] | None:
         return self._seq_id
 
-    def set_id(self, seq_id: list[str] | None) -> None:
+    def set_id(self, seq_id: list[str] | str | None) -> None:
         """
         Set a new sequence identifier for the object. If an empty list is passed as the
-        sequence identifier, the identifier will be set to None. After updating the sequence
-        identifier, the method triggers the update of internal numbering.
+        sequence identifier, the identifier will be set to None.
 
         Parameters
         ----------
         seq_id : list of str or None
             A list of string sequence identifiers to be associated with the object. If
             an empty list is passed, the sequence identifier is set to None.
-
-        Notes
-        -------
-        - This function sets the registered flag to False. Please reset the corresponding
-          `IDRegister` if the object is already attached to `InputFile` to prevent ID clashes.
         """
-        self._seq_id = seq_id
         self._sanitize_seq_id(seq_id)
-        self._sanitize_num()
-        self._is_registered = False
+        self._sanitize_num(self._num)
+
+    def get_full_id_list(self) -> list[str]:
+        """
+        Gets the complete list of IDs by combining the explicitly set IDs
+        and temporary IDs.
+
+        Returns
+        -------
+        list of str
+            A combined list of IDs from the primary and temporary list, or just
+            the temporary list if the list of explicit IDs is None.
+        """
+        if self._seq_id is None:
+            return self._tmp_seq_id
+        return self._seq_id + self._tmp_seq_id
 
     def remove_id(self) -> None:
         self.set_id(None)
+
+    def clear_temporary_id(self) -> None:
+        self._tmp_seq_id = []
 
 
 class IDRegister(object):

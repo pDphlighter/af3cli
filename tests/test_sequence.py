@@ -160,12 +160,11 @@ def test_sequence_init_mod(
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, modifications=seq_mods)
     assert seq._seq_type == seq_type
     assert seq._seq_str == seq_str
-    assert seq.get_id() == seq_id
     assert seq._modifications == seq_mods
-    if seq_id is not None:
-        assert seq._num == len(seq_id)
+    if isinstance(seq_id, list) or seq_id is None:
+        assert seq.get_id() == seq_id
     else:
-        assert seq._num == 1
+        assert seq.get_id() == [seq_id]
 
 
 @pytest.mark.parametrize("seq_type,seq_str,seq_id,templates",[
@@ -186,7 +185,10 @@ def test_sequence_init_template(
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, templates=templates)
     assert seq.sequence_type == seq_type
     assert seq.sequence == seq_str
-    assert seq.get_id() == seq_id
+    if isinstance(seq_id, list) or seq_id is None:
+        assert seq.get_id() == seq_id
+    else:
+        assert seq.get_id() == [seq_id]
     assert len(seq._templates) == len(templates)
 
 
@@ -274,7 +276,10 @@ def test_sequence_init_msa(
     seq = Sequence(seq_type, seq_str, seq_id=seq_id, msa=msa)
     assert seq.sequence_type == seq_type
     assert seq.sequence == seq_str
-    assert seq.get_id() == seq_id
+    if isinstance(seq_id, list) or seq_id is None:
+        assert seq.get_id() == seq_id
+    else:
+        assert seq.get_id() == [seq_id]
     tmp_dict = seq.to_dict()[seq_type.value]
     if msa is None:
         assert seq._msa is None
@@ -379,3 +384,22 @@ def test_dna_complement():
     seq = DNASequence("GCGAATTCG")
     complement = seq.reverse_complement()
     assert complement.sequence == "CGAATTCGC"
+
+
+@pytest.mark.parametrize("cls,seq_str,seq_id,num", [
+    (ProteinSequence, "MVKVGVNGF", "A", 1),
+    (DNASequence, "AUGUGUAU", ["A", "B"], 1),
+    (RNASequence, "GACCTCT", None, 4)
+])
+def test_num_sequences(
+        cls: Sequence,
+        seq_str: str, seq_id: str | list[str], num: int):
+    seq = cls(seq_str=seq_str, seq_id=seq_id, num=num)
+    if seq_id is None:
+        assert seq.num == num
+    else:
+        num_ids = len(seq.get_id())
+        if num_ids > num:
+            assert seq.num == num_ids
+        else:
+            assert seq.num == num

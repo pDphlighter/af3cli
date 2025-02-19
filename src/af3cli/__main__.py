@@ -917,6 +917,8 @@ class LigandCommand(CLICommand):
             # the correponding id values if specified, otherwise the
             # ids cannot be assigned
             if ids is not None:
+                logger.info("Explicit ID assignment is not needed for SDF "
+                            "as each entry is converted to SMILES.")
                 if len(ids) != len(sdf_smiles):
                     exit_on_error("Number of ids does not "
                                   "match number of SDF entries.")
@@ -935,6 +937,9 @@ class LigandCommand(CLICommand):
                     )
                 )
             return self
+
+        if isinstance(smiles, list | tuple):
+            exit_on_error("Only a single SMILES string can be provided.")
 
         ligand_str = smiles or ensure_opt_str_list(ccd)
         ligand_type = LigandType.SMILES if smiles else LigandType.CCD

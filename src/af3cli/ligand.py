@@ -49,12 +49,9 @@ class Ligand(IDRecord, DictMixin):
         self._ligand_value: list[str] | str  = ligand_value
         self._ligand_type: LigandType = ligand_type
 
-        # can be overwritten if seq_id is specified
-        self._num: int = num
-
-        if seq_id is not None:
-            self._seq_id: list[str] = seq_id
-            self._num: int = len(seq_id)
+        # can be overwritten if length of seq_id is larger
+        self.num = num
+        self.set_id(seq_id)
 
     @property
     def ligand_type(self) -> LigandType:
@@ -74,12 +71,21 @@ class Ligand(IDRecord, DictMixin):
         dict
             A dictionary containing the object's ID and ligand data.
         """
-        if isinstance(self._ligand_value, str) and \
-            self._ligand_type == LigandType.CCD:
-            # otherwise the CCD name string will be treated as list of chars
-            self._ligand_value = [self._ligand_value]
+        match self._ligand_type:
+            case LigandType.CCD:
+                if isinstance(self._ligand_value, str):
+                    # otherwise the CCD name string will be treated as list of chars
+                    self._ligand_value = [self._ligand_value]
+            case LigandType.SMILES:
+                if isinstance(self._ligand_value, list):
+                    if len(self._ligand_value) != 1:
+                        raise ValueError("SMILES value must be a single string")
+                    self._ligand_value, _ = self._ligand_value
+            case _:
+                raise ValueError(f"Invalid ligand type: {self._ligand_type}")
+
         content = dict()
-        content["id"] = self.get_id()
+        content["id"] = self.get_full_id_list()
         content[self._ligand_type.value] = self._ligand_value
         return {"ligand": content}
 
@@ -109,7 +115,7 @@ class SMILigand(Ligand):
     """
     def __init__(
         self,
-        ligand_value: list[str] | str,
+        ligand_value: str,
         num: int = 1,
         seq_id: list[str] | None = None
     ):
