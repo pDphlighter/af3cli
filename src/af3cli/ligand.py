@@ -43,11 +43,13 @@ class Ligand(IDRecord, DictMixin):
         ligand_type: LigandType,
         ligand_value: list[str] | str,
         num: int = 1,
-        seq_id: list[str] | None = None
+        seq_id: list[str] | None = None,
+        description: str | None = None,
     ):
         super().__init__(num, None)
         self._ligand_value: list[str] | str  = ligand_value
         self._ligand_type: LigandType = ligand_type
+        self.description: str | None = description
 
         # can be overwritten if length of seq_id is larger
         self.num = num
@@ -87,6 +89,8 @@ class Ligand(IDRecord, DictMixin):
         content = dict()
         content["id"] = self.get_full_id_list()
         content[self._ligand_type.value] = self._ligand_value
+        if self.description:
+            content["description"] = self.description
         return {"ligand": content}
 
     def __str__(self) -> str:
@@ -104,9 +108,10 @@ class CCDLigand(Ligand):
         self,
         ligand_value: list[str],
         num: int = 1,
-        seq_id: list[str] | None = None
+        seq_id: list[str] | None = None,
+        description: str | None = None,
     ):
-        super().__init__(LigandType.CCD, ligand_value, num, seq_id)
+        super().__init__(LigandType.CCD, ligand_value, num, seq_id, description=description)
 
 
 class SMILigand(Ligand):
@@ -117,9 +122,10 @@ class SMILigand(Ligand):
         self,
         ligand_value: str,
         num: int = 1,
-        seq_id: list[str] | None = None
+        seq_id: list[str] | None = None,
+        description: str | None = None,
     ):
-        super().__init__(LigandType.SMILES, ligand_value, num, seq_id)
+        super().__init__(LigandType.SMILES, ligand_value, num, seq_id, description=description)
 
 
 def sdf2smiles(filename: str) -> Generator[str | None, None, None]:
