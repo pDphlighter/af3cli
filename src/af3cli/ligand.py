@@ -33,6 +33,8 @@ class Ligand(IDRecord, DictMixin):
         The string representation(s) of the ligand.
     _ligand_value : LigandType
         The type of the ligand entry.
+    description : str or None
+        Optional free-text description of the ligand entry.
     _seq_id : list[str] or None
         The sequence ID(s) associated with the sequence. These can be
         either specified as a list of strings or will be automatically

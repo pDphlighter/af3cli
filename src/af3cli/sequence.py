@@ -250,6 +250,8 @@ class Sequence(IDRecord, DictMixin):
         The type of the sequence (e.g., Protein, DNA, RNA).
     _seq_str : str
         The string representation of the sequence.
+    description : str or None
+        Optional free-text description of the sequence entry.
     _msa : MSA or None
         The multiple sequence alignment (MSA) information, if available.
     _modifications : list of Modification
