@@ -392,7 +392,7 @@ def test_dna_complement():
     (RNASequence, "GACCTCT", None, 4)
 ])
 def test_num_sequences(
-        cls: Sequence,
+        cls: type[ProteinSequence | DNASequence | RNASequence],
         seq_str: str, seq_id: str | list[str], num: int):
     seq = cls(seq_str=seq_str, seq_id=seq_id, num=num)
     if seq_id is None:
