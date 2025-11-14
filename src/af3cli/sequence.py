@@ -269,6 +269,7 @@ class Sequence(IDRecord, DictMixin):
         seq_type: SequenceType,
         seq_str: str,
         seq_name: str = "",
+        description: str | None = None,
         num: int = 1,
         seq_id: list[str] | None = None,
         modifications: list[Modification] | None = None,
@@ -279,6 +280,7 @@ class Sequence(IDRecord, DictMixin):
         self._seq_str: str = seq_str
         self._seq_type: SequenceType = seq_type
         self.seq_name: str = seq_name
+        self.description: str | None = description
 
         # will be overwritten if len(seq_id) is larger
         self.num = num
@@ -373,6 +375,8 @@ class Sequence(IDRecord, DictMixin):
         content = dict()
         content["id"] = self.get_full_id_list()
         content["sequence"] = self._seq_str
+        if self.description:
+            content["description"] = self.description
         if len(self._modifications):
             content["modifications"] = [m.to_dict() for m in self._modifications]
         if self._msa is not None:
@@ -401,6 +405,7 @@ class ProteinSequence(Sequence):
         self,
         seq_str: str,
         seq_name: str | None = None,
+        description: str | None = None,
         num: int = 1,
         seq_id: list[str] | None = None,
         modifications: list[ResidueModification] | None = None,
@@ -411,6 +416,7 @@ class ProteinSequence(Sequence):
             SequenceType.PROTEIN,
             seq_str=seq_str,
             seq_name=seq_name,
+            description=description,
             num=num,
             seq_id=seq_id,
             modifications=modifications,
@@ -438,6 +444,7 @@ class DNASequence(Sequence):
         self,
         seq_str: str,
         seq_name: str | None = None,
+        description: str | None = None,
         num: int = 1,
         seq_id: list[str] | None = None,
         modifications: list[NucleotideModification] | None = None,
@@ -446,6 +453,7 @@ class DNASequence(Sequence):
             SequenceType.DNA,
             seq_str=seq_str,
             seq_name=seq_name,
+            description=description,
             num=num,
             seq_id=seq_id,
             modifications=modifications,
@@ -484,6 +492,7 @@ class RNASequence(Sequence):
         self,
         seq_str: str,
         seq_name: str | None = None,
+        description: str | None = None,
         num: int = 1,
         seq_id: list[str] | None = None,
         modifications: list[NucleotideModification] | None = None,
@@ -493,6 +502,7 @@ class RNASequence(Sequence):
             SequenceType.RNA,
             seq_str=seq_str,
             seq_name=seq_name,
+            description=description,
             num=num,
             seq_id=seq_id,
             modifications=modifications,
