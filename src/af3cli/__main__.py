@@ -436,6 +436,8 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
         A list of templates associated with the sequence.
     _msa : MSA or None
         The multiple sequence alignment (MSA) object associated with the sequence.
+    _description : str or None
+        An optional description for the sequence.
     """
     def __init__(self):
         super().__init__()
@@ -446,6 +448,7 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
         self._modifications: list[Modification] | None = None
         self._templates: list[Template] | None = None
         self._msa: MSA | None = None
+        self._description: str | None = None
 
     def add(
         self,
@@ -528,6 +531,23 @@ class SequenceCommand(CLICommand, metaclass=ABCMeta):
             self._modifications.append(
                 NucleotideModification(mod_str=mod, mod_pos=pos)
             )
+        return self
+
+    def description(self, text: str) -> Self:
+        """
+        Sets an optional description for the current sequence entry.
+
+        Parameters
+        ----------
+        text : str
+            The description text to associate with the sequence entry.
+
+        Returns
+        -------
+        SequenceCommand
+            The current instance for method chaining.
+        """
+        self._description = text
         return self
 
     def msa(
@@ -684,6 +704,7 @@ class ProteinCommand(SequenceCommand):
         """
         sequence = ProteinSequence(
             seq_str=self._sequence_str,
+            description=self._description,
             num=self._sequence_num,
             seq_id=self._sequence_ids,
             modifications=self._modifications or None,
@@ -696,6 +717,7 @@ class ProteinCommand(SequenceCommand):
         self._templates = []
         self._modifications = None
         self._msa = None
+        self._description = None
 
 
 class DNACommand(SequenceCommand):
@@ -771,6 +793,7 @@ class DNACommand(SequenceCommand):
         """
         sequence = DNASequence(
             seq_str=self._sequence_str,
+            description=self._description,
             num=self._sequence_num,
             seq_id=self._sequence_ids,
             modifications=self._modifications or None
@@ -793,6 +816,7 @@ class DNACommand(SequenceCommand):
 
         self._modifications = None
         self._rev_complement = False
+        self._description = None
 
 
 class RNACommand(SequenceCommand):
@@ -825,6 +849,7 @@ class RNACommand(SequenceCommand):
         """
         sequence = RNASequence(
             seq_str=self._sequence_str,
+            description=self._description,
             num=self._sequence_num,
             seq_id=self._sequence_ids,
             modifications=self._modifications or None,
@@ -835,6 +860,7 @@ class RNACommand(SequenceCommand):
 
         self._modifications = None
         self._msa = None
+        self._description = None
 
 
 class LigandCommand(CLICommand):
@@ -849,10 +875,30 @@ class LigandCommand(CLICommand):
     ----------
     _ligands : list[Ligand] or None
         A list of Ligand objects representing the added ligands.
+    _description : str or None
+        An optional description for the Ligand Entity.
     """
     def __init__(self):
         super().__init__()
         self._ligands: list[Ligand] | None = None
+        self._description: str | None = None
+
+    def description(self, text: str) -> Self:
+        """
+        Sets an optional description for the next ligand entries.
+
+        Parameters
+        ----------
+        text : str
+            The description text to associate with the ligand entry or entries.
+
+        Returns
+        -------
+        LigandCommand
+            The current instance for method chaining.
+        """
+        self._description = text
+        return self
 
     def add(
         self,
@@ -932,6 +978,7 @@ class LigandCommand(CLICommand):
                     Ligand(
                         ligand_type=LigandType.SMILES,
                         ligand_value=smi,
+                        description=self._description,
                         num=num,
                         seq_id=k
                     )
@@ -949,6 +996,7 @@ class LigandCommand(CLICommand):
             Ligand(
                 ligand_type=ligand_type,
                 ligand_value=ligand_str,
+                description=self._description,
                 num=num,
                 seq_id=ids
             )
@@ -972,6 +1020,7 @@ class LigandCommand(CLICommand):
             logger.info(f"Adding ligand {ligand}")
             self._parent.builder().add_ligand(ligand)
         self._ligands = None
+        self._description = None
 
 
 class CLI(CommandBase):
