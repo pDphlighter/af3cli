@@ -386,6 +386,23 @@ def test_dna_complement():
     assert complement.sequence == "CGAATTCGC"
 
 
+@pytest.mark.parametrize("cls,seq_str,desc", [
+    (ProteinSequence, "MVKVGVNGF", "kinase protein"),
+    (DNASequence, "GACCTCT", "plasmid insert"),
+    (RNASequence, "AUGUGUAU", None),
+])
+def test_sequence_description_to_dict(cls, seq_str: str, desc: str | None):
+    seq = cls(seq_str=seq_str, description=desc)
+    ddict = seq.to_dict()
+    key = seq.sequence_type.value
+    assert key in ddict
+    inner = ddict[key]
+    assert inner["sequence"] == seq_str
+    if desc:
+        assert inner["description"] == desc
+
+
+
 @pytest.mark.parametrize("cls,seq_str,seq_id,num", [
     (ProteinSequence, "MVKVGVNGF", "A", 1),
     (DNASequence, "AUGUGUAU", ["A", "B"], 1),
