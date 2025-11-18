@@ -1076,7 +1076,7 @@ class CLI(CommandBase):
         self,
         filename: str = DEFAULT_FILENAME,
         jobname: str = "job",
-        version: int = 4,
+        version: int = 1,
         dialect: str = "alphafold3"
     ) -> Self:
         """
