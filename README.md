@@ -149,6 +149,8 @@ If modifications or manually defined IDs are required, the complementary sequenc
 
 AlphaFold3 added the option of specifying a textual description for protein, RNA and DNA chains and ligands. In af3cli, each sequence entity can carry an optional description string. This field is only used in the JSON format and serves as a human-readable comment describing the chain. If not set, it is omitted from the JSON.
 
+**Important Note:** Older versions of the AlphaFold3 inference pipeline (version 3 or earlier) do not support the description field. Including this field in the JSON for these versions will raise a _ValueError_. To ensure compatibility, af3cli will automatically exclude the description field from the JSON file (default version = 1) or if the version is explicitly set to <= 3. This safeguard ensures seamless operation across different versions of AlphaFold3.
+
 CLI examples:
 
 ```shell
