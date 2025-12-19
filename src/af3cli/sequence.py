@@ -270,7 +270,6 @@ class Sequence(IDRecord, DictMixin):
         self,
         seq_type: SequenceType,
         seq_str: str,
-        seq_name: str = "",
         description: str | None = None,
         num: int = 1,
         seq_id: list[str] | None = None,
@@ -281,7 +280,6 @@ class Sequence(IDRecord, DictMixin):
         super().__init__(num, None)
         self._seq_str: str = seq_str
         self._seq_type: SequenceType = seq_type
-        self.seq_name: str = seq_name
         self.description: str | None = description
 
         # will be overwritten if len(seq_id) is larger
@@ -406,7 +404,6 @@ class ProteinSequence(Sequence):
     def __init__(
         self,
         seq_str: str,
-        seq_name: str | None = None,
         description: str | None = None,
         num: int = 1,
         seq_id: list[str] | None = None,
@@ -417,7 +414,6 @@ class ProteinSequence(Sequence):
         super().__init__(
             SequenceType.PROTEIN,
             seq_str=seq_str,
-            seq_name=seq_name,
             description=description,
             num=num,
             seq_id=seq_id,
@@ -445,7 +441,6 @@ class DNASequence(Sequence):
     def __init__(
         self,
         seq_str: str,
-        seq_name: str | None = None,
         description: str | None = None,
         num: int = 1,
         seq_id: list[str] | None = None,
@@ -454,7 +449,6 @@ class DNASequence(Sequence):
         super().__init__(
             SequenceType.DNA,
             seq_str=seq_str,
-            seq_name=seq_name,
             description=description,
             num=num,
             seq_id=seq_id,
@@ -481,7 +475,7 @@ class DNASequence(Sequence):
         complement = ''.join(cmap[base] for base in self._seq_str)
         complement = complement[::-1]
         return DNASequence(
-            complement, num=self._num, seq_name=self.seq_name,
+            complement, num=self._num, description=self.description,
         )
 
 
@@ -493,7 +487,6 @@ class RNASequence(Sequence):
     def __init__(
         self,
         seq_str: str,
-        seq_name: str | None = None,
         description: str | None = None,
         num: int = 1,
         seq_id: list[str] | None = None,
@@ -503,7 +496,6 @@ class RNASequence(Sequence):
         super().__init__(
             SequenceType.RNA,
             seq_str=seq_str,
-            seq_name=seq_name,
             description=description,
             num=num,
             seq_id=seq_id,
@@ -650,6 +642,6 @@ def fasta2seq(filename: str) -> Generator[Sequence | None, None, None]:
 
         yield Sequence(
             seq_type=seq_type,
-            seq_name=entry_name.replace(' ', '_').replace('|', '_').replace(':', '_').strip(),
-            seq_str=entry_seq
+            description=entry_name.replace(' ', '_').replace('|', '_').replace(':', '_').strip(),
+            seq_str=entry_seq,
         )
