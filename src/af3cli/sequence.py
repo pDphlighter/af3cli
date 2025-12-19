@@ -598,24 +598,6 @@ def identify_sequence_type(seq_str: str) -> SequenceType | None:
     return None
 
 
-def sanitize_sequence_name(name: str) -> str:
-    """
-    Sanitizes a sequence name by replacing unwanted characters and
-    stripping whitespace.
-
-    Parameters
-    ----------
-    name : str
-        The original sequence name to be sanitized.
-
-    Returns
-    -------
-    str
-        The sanitized sequence name.
-    """
-    return re.sub(r'[ |:|]', '_', name).strip()
-
-
 def fasta2seq(filename: str) -> Generator[Sequence | None, None, None]:
     """
     Converts a FASTA file into a sequence generator.
