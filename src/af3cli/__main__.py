@@ -152,7 +152,7 @@ def read_fasta_entry(filename: str) -> str:
     """
     try:
         fasta_file = read_fasta(filename)
-        seq_name, seq_str = next(fasta_file)
+        _desc, seq_str = next(fasta_file)
         if seq_str is None:
             exit_on_error("No valid sequence found in FASTA file.")
         return seq_str
