@@ -3,7 +3,6 @@ from __future__ import annotations
 from enum import StrEnum
 from abc import ABCMeta
 from typing import Generator
-import re
 
 from .mixin import DictMixin
 from .exception import (AFSequenceError, AFTemplateError,
